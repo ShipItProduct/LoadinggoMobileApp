@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import {  StyleSheet, Text, View } from 'react-native'
-import { Button, Headline , TextInput , Modal , ActivityIndicator , Colors , Portal} from 'react-native-paper'
+import { Button, Headline , TextInput , Modal , ActivityIndicator , Colors } from 'react-native-paper'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'
+import {root} from '../Config/root'
 
 const Login = ({navigation}) => {
 
@@ -9,10 +12,28 @@ const Login = ({navigation}) => {
 
     const [disabled , setDisabled] = useState(false)
 
-    const handleLogin = () =>{
-        setDisabled(true)
-        navigation.navigate('dashboard-app')
-        setDisabled(false)
+    const handleLogin = async () =>{
+        
+        try {
+            // setDisabled(true)
+            // const {data} = await axios.post(`${root.dev}/user/login` , {email: email , password:password})
+            // const user = JSON.stringify({
+            //     email: data.message.email,
+            //     token: data.message.token,
+            //     userId:data.message.userId,
+            //     account:data.message.account
+            // })
+            // await AsyncStorage.setItem("user" , user);
+            // await AsyncStorage.setItem("CurrentRole" , "Shipper");
+
+            navigation.navigate('dashboard-app')
+            // setDisabled(false)
+        } catch (error) {
+            console.log(error);
+        }
+
+
+        
         
     }
 
@@ -30,7 +51,11 @@ const Login = ({navigation}) => {
                 style={{color:'blue'}}>
                 Forgot Password?
             </Text>
-                <Button mode='contained' onPress={handleLogin} style={styles.loginBtn} disabled={disabled} >{ disabled ? ( <ActivityIndicator animating={true} color={Colors.black} />) :('Log In') }</Button>
+            {
+                disabled ? (<ActivityIndicator animating={true} color={Colors.black} />) : (
+                    <Button mode='contained' onPress={handleLogin} style={styles.loginBtn} > Log In</Button>
+                )
+            }
             </View>
             
             <View style={styles.orSection} >

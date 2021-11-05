@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Login from './Views/Login';
 import { Provider as PaperProvider } from 'react-native-paper'
@@ -23,7 +22,7 @@ const App = () => {
   return (
     <NavigationContainer> 
     <PaperProvider theme={theme} >  
-    <Stack.Navigator screenOptions={{headerShown:false}}  >
+    <Stack.Navigator screenOptions={{headerShown:false}} initialRouteName='dashboard-app' >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />
