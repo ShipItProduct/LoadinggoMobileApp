@@ -4,10 +4,10 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { Headline, TextInput, Button, Checkbox } from 'react-native-paper'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FeatherIcon from 'react-native-vector-icons/dist/Feather'
-import PhoneInput from 'react-native-phone-input'
+import PhoneInput from "react-native-phone-number-input";
 import * as ImagePicker from 'react-native-image-picker'
 
-const BuildProfile = () => {
+const BuildProfile = ({navigation}) => {
 
     let [firstName, setFirstName] = useState('')
     let [lastName, setLastName] = useState('')
@@ -46,19 +46,22 @@ const BuildProfile = () => {
         hideDatePicker();
     };
 
-    const handleProfileSubmit = () =>{
-           console.log({
-               firstName,
-               lastName,
-               gender,
-               dob,
-               town,
-               street,
-               city,
-               province,
-               phone,
-               cnic
-           }); 
+    const handleProfileSubmit = () => {
+        console.log({
+            firstName,
+            lastName,
+            gender,
+            dob,
+            town,
+            street,
+            city,
+            province,
+            phone,
+            cnic
+        });
+
+
+        navigation.navigate('dashboard-app')
     }
 
 
@@ -112,28 +115,27 @@ const BuildProfile = () => {
                     <TextInput label='City' style={styles.fullInput} mode='outlined' value={city} onChangeText={(text) => setCity(text)} />
                     <TextInput label='Province' style={styles.fullInput} mode='outlined' value={province} onChangeText={(text) => setProvince(text)} />
                     <View style={{
-                        flexDirection: 'row', alignItems: 'center', height: 50,
                         borderWidth: 1,
                         borderRadius: 2,
-                        backgroundColor: '#F8F9FB',
-                        height: 50,
+                        height: 75,
                         width: 310,
                         marginBottom: 5,
                         marginTop: 5,
-                        marginLeft: 5
+                        marginLeft: 5,
                     }} >
                         <PhoneInput
-                            initialCountry={'pk'}
-                            initialValue={phone}
-                            onChangeText={(text) => setPhone(text)}
-                            textProps={{
-                                placeholder: 'Enter a phone number...'
+                            defaultValue={phone}
+                            defaultCode="PK"
+                            textInputStyle={{color:'black'}}
+                            onChangeText={(text) => {
+                                setPhone(text);
                             }}
                         />
                     </View>
                     <TextInput label='CNIC' style={styles.fullInput} mode='outlined' value={cnic} onChangeText={(text) => setCNIC(text)} />
-                    <View style={styles.searchSection}>
-                        <Text style={styles.profileText} >Profile Picture</Text>
+                    <View style={styles.uploadSection}>
+                        <View style={{flexDirection:'row',justifyContent:'space-between'}} >
+                        <Text>Profile Picture</Text>
                         <TouchableOpacity onPress={() => {
                             ImagePicker.launchImageLibrary(
                                 {
@@ -149,8 +151,12 @@ const BuildProfile = () => {
                             )
                         }} >
                             <FeatherIcon style={styles.searchIcon} name='upload' size={20} color='#000' />
-                            <Text>{photo === '' ? '' : photoName}</Text>
                         </TouchableOpacity>
+                       
+                        </View>
+                        <View>
+                        <Text>{photo === '' ? '' : photoName}</Text>
+                        </View>
                     </View>
                     <Button mode='contained' style={styles.submitBtn} onPress={handleProfileSubmit} >Submit</Button>
 
@@ -204,7 +210,8 @@ const styles = StyleSheet.create({
     },
     submitBtn: {
         width: 300,
-        margin: 5
+        margin: 10,
+        
     },
     searchSection: {
         borderWidth: 1,
@@ -213,6 +220,16 @@ const styles = StyleSheet.create({
         width: 310,
         marginLeft: 5,
         padding: 5,
+    },
+    uploadSection: {
+        borderWidth: 1,
+        borderRadius: 2,
+        backgroundColor: '#F8F9FB',
+        width: 310,
+        marginLeft: 5,
+        padding: 5,
+        flexDirection:'column',
+        justifyContent:'space-between'
     }
 })
 

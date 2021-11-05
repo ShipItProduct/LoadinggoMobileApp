@@ -11,6 +11,8 @@ import EmailVerificationPage from './Views/EmailVerificationPage';
 import BuildProfile from './Views/BuildProfile';
 import EnterEmailForForgetPassword from './Views/EnterEmailForForgetPassword';
 import ResetPassword from './Views/ResetPassword';
+import {LogBox } from 'react-native';
+LogBox.ignoreLogs(['Reanimated 2']);
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +23,7 @@ const App = () => {
   return (
     <NavigationContainer> 
     <PaperProvider theme={theme} >  
-    <Stack.Navigator screenOptions={{headerShown:false}}  initialRouteName="BuildProfile" >
+    <Stack.Navigator screenOptions={{headerShown:false}}  >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />

@@ -1,14 +1,19 @@
 import React, { useState } from 'react'
 import {  StyleSheet, Text, View } from 'react-native'
-import { Button, Headline , TextInput} from 'react-native-paper'
+import { Button, Headline , TextInput , Modal , ActivityIndicator , Colors , Portal} from 'react-native-paper'
 
 const Login = ({navigation}) => {
 
     let [email , setEmail] = useState('')
     let [password , setPassword] = useState('')
 
+    const [disabled , setDisabled] = useState(false)
+
     const handleLogin = () =>{
+        setDisabled(true)
         navigation.navigate('dashboard-app')
+        setDisabled(false)
+        
     }
 
 
@@ -25,7 +30,7 @@ const Login = ({navigation}) => {
                 style={{color:'blue'}}>
                 Forgot Password?
             </Text>
-                <Button mode='contained' onPress={handleLogin} style={styles.loginBtn} >Log In</Button>
+                <Button mode='contained' onPress={handleLogin} style={styles.loginBtn} disabled={disabled} >{ disabled ? ( <ActivityIndicator animating={true} color={Colors.black} />) :('Log In') }</Button>
             </View>
             
             <View style={styles.orSection} >
