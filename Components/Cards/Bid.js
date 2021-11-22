@@ -4,7 +4,7 @@ import { Title } from 'react-native-paper'
 
 const Bid = () => {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity  >
         <View style={styles.bidCard} >
             <Text>BID</Text>
             <Title>Bid #skslkflks</Title>
