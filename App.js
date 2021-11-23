@@ -11,7 +11,8 @@ import BuildProfile from './Views/BuildProfile';
 import EnterEmailForForgetPassword from './Views/EnterEmailForForgetPassword';
 import ResetPassword from './Views/ResetPassword';
 import {LogBox } from 'react-native';
-import { Provider } from 'react-redux'
+import {Provider} from 'react-redux';
+// import { Provider } from 'react-redux'
 import store from './Store/index'
 LogBox.ignoreLogs(['Reanimated 2']);
 
@@ -22,14 +23,14 @@ const Stack = createNativeStackNavigator();
 const App = () => {
  
   return (
-    <Provider store={store} >
+    <Provider store={store}>
     <NavigationContainer> 
     <PaperProvider theme={theme} >  
     <Stack.Navigator screenOptions={{headerShown:false}}  >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />
         <Stack.Screen name="BuildProfile" component={BuildProfile} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />
         <Stack.Screen name="EnterEmailForForgetPassword" component={EnterEmailForForgetPassword} />
         <Stack.Screen name='ResetPassword' component={ResetPassword} />
         <Stack.Screen name="dashboard-app" component={Dashboard} />

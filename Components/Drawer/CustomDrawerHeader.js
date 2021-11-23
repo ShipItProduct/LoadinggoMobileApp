@@ -3,22 +3,20 @@ import { StyleSheet, Text, View } from 'react-native'
 import { Title, Switch } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeUserRole } from '../../Store/user'
+import { setUserType } from '../../Store/action.js'
 
 const CustomDrawerHeader = ({ title, navigation }) => {
 
     const dispatch = useDispatch()
     
-    const currentRole = useSelector(state => state.currentRole)
+    const currentRole = useSelector(state => state.role)
 
-    console.log(currentRole);
 
     const handleRoleChange = async () => {
         if (currentRole === "Shipper") {
-            dispatch(changeUserRole("Carrier"))
+            dispatch(setUserType("Carrier"))
         } else {
-            dispatch(changeUserRole("Shipper"))
-            console.log(currentRole);   
+            dispatch(setUserType("Shipper"))
         }
     }
 

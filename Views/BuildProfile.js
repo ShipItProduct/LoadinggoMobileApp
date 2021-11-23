@@ -47,6 +47,7 @@ const BuildProfile = ({navigation}) => {
     };
 
     const handleProfileSubmit = () => {
+        console.log('=>',photo,'<==<')
         console.log({
             firstName,
             lastName,

@@ -4,6 +4,8 @@ import { Button, Headline , TextInput , Modal , ActivityIndicator , Colors } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios'
 import {root} from '../Config/root'
+import {GoogleSignin,GoogleSigninButton,statusCodes} from '@react-native-google-signin/google-signin';
+import {LoginButton, AccessToken } from 'react-native-fbsdk';
 
 const Login = ({navigation}) => {
 
@@ -11,6 +13,42 @@ const Login = ({navigation}) => {
     let [password , setPassword] = useState('')
 
     const [disabled , setDisabled] = useState(false)
+
+    GoogleSignin.configure({
+        scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
+        webClientId: '691558783259-segcfdciideiapg249ad84lholp7sila.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+        forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+        accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
+        androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
+    });
+
+      const signIn = async () => {
+        try {
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
+          const currentUser = await GoogleSignin.getCurrentUser();
+        //   setState({ userInfo });
+        console.log(userInfo,'==>>',currentUser)
+        } catch (error) {
+            console.log(error.message)
+          if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            // user cancelled the login flow
+        console.log('cancel')
+          } else if (error.code === statusCodes.IN_PROGRESS) {
+            // operation (e.g. sign in) is in progress already
+        console.log('in progress')
+          } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('not available')
+
+            // play services not available or outdated
+          } else {
+            // some other error happened
+          }
+        }
+      };
+  
+
 
     const handleLogin = async () =>{
         
@@ -64,8 +102,34 @@ const Login = ({navigation}) => {
                 <View style={styles.hr} ></View>
             </View>
             <View style={styles.socialBtns} >
-                <Button icon="google"  mode='contained' onPress={() => console.log('pressed')} style={styles.loginBtn} color='red' >Log In With Google</Button>
-                <Button icon="facebook" mode='contained' onPress={() => console.log('pressed')} style={styles.loginBtn} color='blue'>Log In With Facebook</Button>
+            <GoogleSigninButton
+  style={{ width: 250, height: 48 }}
+  size={GoogleSigninButton.Size.Wide}
+  color={GoogleSigninButton.Color.Light}
+  onPress={()=>signIn()}
+//   disabled={this.state.isSigninInProgress}
+/>   
+<LoginButton
+            style={{width:250,height:35,backgroundColor:"blue"}}
+              onLoginFinished={
+                (error, result) => {
+                  console.log('start')
+    
+                  if (error) {
+                    console.log("login has error: " + result.error);
+                  } else if (result.isCancelled) {
+                    console.log("login is cancelled.");
+                  } else {
+                    AccessToken.getCurrentAccessToken().then(
+                      (data) => {
+                        console.log('ho gya')
+                        // console.log(data.accessToken.toString())
+                      }
+                    )
+                  }
+                }
+              }
+              onLogoutFinished={() => console.log("logout.")}/>
             </View>
             <Text
                 style={{color:'blue'}}
@@ -73,6 +137,7 @@ const Login = ({navigation}) => {
             >
                 New here? Register now.
             </Text>
+
         </View>
         
     )

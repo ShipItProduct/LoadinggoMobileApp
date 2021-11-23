@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.11",
     "@react-native-community/datetimepicker": "^3.5.2",
+    "@react-native-google-signin/google-signin": "^7.0.1",
     "@react-native-picker/picker": "^2.2.0",
     "@react-navigation/drawer": "^6.1.8",
     "@react-navigation/elements": "^1.2.1",
@@ -24,8 +25,9 @@
     "react-native-calendars": "^1.1268.0",
     "react-native-confirmation-code-field": "^7.1.0",
     "react-native-date-picker": "^4.1.1",
+    "react-native-fbsdk": "^3.0.0",
     "react-native-gesture-handler": "^1.10.3",
-    "react-native-image-picker": "^4.1.2",
+    "react-native-image-picker": "^4.3.0",
     "react-native-modal-datetime-picker": "^13.0.0",
     "react-native-paper": "^4.9.2",
     "react-native-paper-dropdown": "^1.0.7",
