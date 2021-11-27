@@ -1,5 +1,4 @@
-
-export const root = {
-    dev:'http://172.16.9.170:5000',
-    prod:'tbd'
+export const Root ={
+    dev : 'http://localhost:5000',
+    production : 'https://stg-dakiyah.herokuapp.com'
 }

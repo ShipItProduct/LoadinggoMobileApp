@@ -1,5 +1,6 @@
 const initialState = {
-    role:'Shipper'
+    role:'Shipper',
+    user:{}
 }
 
 
@@ -16,7 +17,13 @@ const initialState = {
             return{
                 ...state,
                 role:'Carrier'
-            };    
+            };
+            break;
+        case 'setUser':
+            return{
+                ...state,
+                user:action.val
+            }    
         default:
             return{
                 ...state

@@ -1,6 +1,8 @@
 import React , {useState} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Button, Headline } from 'react-native-paper'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Heading} from 'native-base';
 import {
     CodeField,
     Cursor,
@@ -10,10 +12,14 @@ import {
 
 const CELL_COUNT = 4;
 
-const EmailVerificationPage = ({navigation}) => {
+const EmailVerificationPage = ({route,navigation}) => {
 
 
+    const {id}  = route.params;
+    console.log('id==>',id)
     const [value, setValue] = useState('');
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
     const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
       value,
@@ -21,8 +27,28 @@ const EmailVerificationPage = ({navigation}) => {
     });
 
 
-    const handleCodeSubmit = () =>{
-        navigation.navigate('BuildProfile')
+    const handleCodeSubmit =async () =>{
+        setErrorShow(false);
+      try{
+          var send={
+            emailCode:Number(value),
+            accountId:id
+          }
+          const {data} = await axios.post(`${Root.production}/user/verify`,send);
+          if(data.status===200){
+            await AsyncStorage.setItem("user" , JSON.stringify(data.message));
+            await AsyncStorage.setItem("CurrentRole" , 'Shipper');
+            navigation.navigate(`dashboard-app`,{id:id})
+          }
+          else{
+            setError(data.message);
+            setErrorShow(true)
+          }
+        }
+        catch(err){
+          setError(err.message);
+          setErrorShow(true)
+        }
     }
 
     return (
@@ -48,6 +74,18 @@ const EmailVerificationPage = ({navigation}) => {
           </Text>
         )}
       />
+            {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Login Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }      
       <Button mode='contained' style={styles.submitBtn} onPress={handleCodeSubmit} >Submit</Button>
        </View>
     )

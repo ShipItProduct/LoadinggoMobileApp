@@ -3,17 +3,51 @@ import { Linking, StyleSheet, Text, View } from 'react-native'
 import { Button, Headline , TextInput} from 'react-native-paper'
 import {GoogleSignin,GoogleSigninButton,statusCodes} from '@react-native-google-signin/google-signin';
 import {LoginButton, AccessToken } from 'react-native-fbsdk';
-
+import {Root} from '../Config/root'
+import {Heading} from 'native-base';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
 const Register = ({navigation}) => {
 
     let [username , setUserName] = useState('')
     let [email , setEmail] = useState('')
     let [password , setPassword] = useState('')
     let [confirmPassword , setConfirmPassword] = useState('')
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
+    const [disabled , setDisabled] = useState(false)
 
-    const handleSignUp = () =>{
-       
-        navigation.navigate('EmailVerification')
+    const handleSignUp =async () =>{
+      setDisabled(true)
+      setErrorShow(false);
+        try {
+          if(username==='' || email=== '' || password ===''){
+              setErrorShow(true);
+              setError('Please fill form completely.')
+          }
+          else if(password !==confirmPassword){
+              setErrorShow(true);
+              setError('Your Password & Confirm Password should be same.')
+          }else{
+            let {data} = await axios.post(`${Root.production}/user/register` , {email , password,username})
+            if(data.status==200){
+              navigation.navigate('BuildProfile',{id:data.message.id})
+            }else if(data.status==409){
+              setError(data.mesaage)
+              setErrorShow(true);
+            }
+            else{
+              setError(data.message)
+              setErrorShow(true);
+            }
+          } 
+        }
+        catch (error) {
+          setError(error.message)
+          setErrorShow(true);
+        }
+
+      setDisabled(false)
     }
 
 
@@ -56,6 +90,19 @@ const Register = ({navigation}) => {
         <View style={styles.registerPage} >
             <Headline style={styles.header} >Welcome</Headline>
             <Text style={styles.header} >To begin, sign up with an option below</Text>
+            {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Registration Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
+
             <View style={{alignItems:'center'}}  >
                 <TextInput label='Username' mode='outlined' style={styles.input} value={username} onChangeText={(text) => setUserName(text) } left={<TextInput.Icon name='account-circle-outline' />} />
                 <TextInput label='Email' mode='outlined' style={styles.input} value={email} onChangeText={(text) => setEmail(text) } left={<TextInput.Icon name='email-outline' />} />

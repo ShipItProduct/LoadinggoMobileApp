@@ -1,22 +1,27 @@
+import { NavigationContainer } from '@react-navigation/native'
 import React from 'react'
-import { StyleSheet, View , Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View , Text,Pressable } from 'react-native'
 import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
-
-const Shipment = () => {
+import { Link } from '@react-navigation/native';
+const Shipment = ({data}) => {
+    console.log(data.status)
     return (
-        <TouchableOpacity>
+        <Pressable>
         <View style={styles.shipmentCard} >
             <Text>SHIPMENT OFFER</Text>
-            <Title>Shipment #jknsjdkn</Title>
-            <Text>From : Destination</Text>
-            <Text>To: Desitaination</Text>
+            <Title>Shipment #{data._id}</Title>
+            <Text>From : {data.pickupCity}</Text>
+            <Text>To: {data.destinationCity}</Text>
             <View style={{flexDirection:'row',alignItems:'center'}} >
-            <Text>Status: </Text><StatusBadge tag='Closed' />
+            <Text>Status: </Text><StatusBadge tag={data.status} />
             </View>
             <Text>Cost: $$$</Text>
+                <Link to={{ screen: 'shipmentDetails', params: { id:data._id  } }}>
+                View Details &gt;&gt;
+                </Link>
         </View>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

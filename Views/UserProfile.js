@@ -1,41 +1,104 @@
-import React from 'react'
-import { Text,View,StyleSheet } from 'react-native'
+import React,{useState,useEffect} from 'react'
+import { Text,View,StyleSheet,ScrollView } from 'react-native'
+import { Avatar } from 'react-native-paper';
+import { Button } from 'native-base';
+import {Center,Heading} from 'native-base'
+import axios from 'axios';
+import { Root } from '../Config/root';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
+import StarRating from 'react-native-star-rating';
 
-const UserProfile = () => {
+const UserProfile = ({navigation}) => {
+
+    // console.log('getItem==>',user);
+    // user = JSON.parse(user);
+    var user=useSelector(state=>state.user);
+    const [userData,setUserData] = useState({})
+    const [error,setError] = useState('')
+    const [errorShow,setErrorShow] = useState(false)
+
+useEffect(async()=>{
+    setErrorShow(false)
+        // user = JSON.parse(user);
+        var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:user.account._id})
+        if(data.status==200){
+            setUserData(data.message)
+        }else{
+            setError(data.message)
+            setErrorShow(true)
+        }
+
+},[])
+
     return (
-        <View>
+        <ScrollView>
+            {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Login Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }            
             <Text style={styles.heading}>My Profile</Text>
-            <View
-            style={{width:'50%',height:'100%'}} >
-                <Text style={styles.tags}>Current Address :</Text>
+                <View>
+            <Button  style={{position:'absolute',right:30}} onPress={() => navigation.navigate('edit-profile')}>Edit Profile</Button>
+            </View>
+        <Center>
+            <Avatar.Image style={styles.avatar} size={70} source={{uri:userData.profilePic}} />
+            <Text>{userData ? userData.firstName : 'MINHAJ'} {userData.lastName}</Text>
+            <StarRating
+            disabled={true}
+            maxStars={5}
+            rating={userData.rating}
+      />
+            </Center>
+            <ScrollView>
+        <View
+            style={{width:'40%',height:'100%'}} >
+                <Text style={styles.tags}>Street :</Text>
+                <Text style={styles.tags}>Town  :</Text>
+                <Text style={styles.tags}>Province  :</Text>
+                <Text style={styles.tags}>City  :</Text>
                 <Text style={styles.tags}>Date Of Birth :</Text>
                 <Text style={styles.tags}>Phone Number :</Text>
                 <Text style={styles.tags}>Gender :</Text>
-                <Text style={styles.tags}>Carrier Role :</Text>
                 <Text style={styles.tags}>Shipper Role :</Text>
+                <Text style={styles.tags}>Carrier Role :</Text>
             </View>
             <View
-            style={{width:'50%',height:'100%',position:'absolute',left:"50%",top:'13%'}}>
-                <Text style={styles.data}>Street # 2 Landhi Sindh,Kashmir.</Text>
-                <Text style={styles.data}>2021-10-13</Text>
-                <Text style={styles.data}>3170112101</Text>
-                <Text style={styles.data}>Male</Text>
-                <Text style={styles.data}>Enabled</Text>
-                <Text style={styles.data}>Enabled</Text>
+            style={{width:'60%',height:'100%',position:'absolute',left:"50%"}}>
+                <Text style={styles.data}>{userData.street}</Text>
+                <Text style={styles.data}>{userData.town}</Text>
+                <Text style={styles.data}>{userData.province}</Text>
+                <Text style={styles.data}>{userData.city}</Text>
+                <Text style={styles.data}>{userData.dateOfBirth}</Text>
+                <Text style={styles.data}>{userData.phoneNumber}</Text>
+                <Text style={styles.data}>{userData.gender}</Text>
+                <Text style={userData.shipperRole ? {...styles.data,color:'green'} : {...styles.data,color:'red'} }>{userData.shipperRole ? 'Enabled' : 'Disabled '}</Text>
+                <Text style={userData.carrierRole ? {...styles.data,color:'green'} : {...styles.data,color:'red'} }>{userData.carrierRole ? 'Enabled' : 'Disabled '}</Text>
             </View>
-        </View>
+            </ScrollView>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     heading:{
         fontSize:20,
-        padding:20,
+        paddingTop:20,
+        paddingLeft:20,
         color:'black',
-        height:'13%'
+        height:'13%',
+        marginBottom:-20
     },
     tags:{
-        fontSize:17,
+        fontSize:15,
         paddingTop:25,
         paddingLeft:20,
         textDecorationColor:'black',
@@ -44,9 +107,12 @@ const styles = StyleSheet.create({
     data:{
         fontSize:15,
         paddingTop:25,
-        paddingLeft:20,
+        paddingLeft:10,
         textDecorationColor:'black',
         textDecorationLine:'underline'
+    },
+    avatar:{
+        marginTop:20
     }
 })
 

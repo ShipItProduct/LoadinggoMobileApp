@@ -1,22 +1,24 @@
 import React from 'react'
-import { StyleSheet, View , Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View , Text, Pressable } from 'react-native'
 import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
+import { Link } from '@react-navigation/native';
 
-const Trip = () => {
+const Trip = ({data}) => {
     return (
-        <TouchableOpacity>
+        <Pressable>
         <View style={styles.tripCard} >
-            <Text>TRIP</Text>
-            <Title>Trip #jknsjdkn</Title>
-            <Text>From : Destination</Text>
-            <Text>To: Desitaination</Text>
+            <Title>Trip #{data._id}</Title>
+            <Text>From : {data.departureCity}</Text>
+            <Text>To: {data.destinationCity}</Text>
             <View style={{flexDirection:'row',alignItems:'center'}} >
-            <Text>Status: </Text><StatusBadge />
+            <Text>Status: </Text><StatusBadge tag='Open'/>
             </View>
-            <Text>Cost per Package: $$$</Text>
+                <Link to={{ screen: 'CreateRequest', params: { id: data._id } }}>
+                View Details &gt;&gt;
+                </Link>
         </View>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

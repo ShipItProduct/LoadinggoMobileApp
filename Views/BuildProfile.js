@@ -6,13 +6,18 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FeatherIcon from 'react-native-vector-icons/dist/Feather'
 import PhoneInput from "react-native-phone-number-input";
 import * as ImagePicker from 'react-native-image-picker'
+import {Root} from '../Config/root'
+import axios from 'axios';
+import firebase from './../Components/Firebase/Firebase';
 
-const BuildProfile = ({navigation}) => {
+const BuildProfile = ({route,navigation}) => {
 
+
+    var {id} = route.params;
     let [firstName, setFirstName] = useState('')
     let [lastName, setLastName] = useState('')
     let [gender, setGender] = React.useState("Male");
-    let [dob, setDob] = useState('')
+    let [dateOfBirth, setdateOfBirth] = useState('')
     let [town, setTown] = useState('')
     let [street, setStreet] = useState('')
     let [city, setCity] = useState('')
@@ -21,6 +26,8 @@ const BuildProfile = ({navigation}) => {
     let [cnic, setCNIC] = useState('')
     let [photo, setPhoto] = useState(null)
     let [photoName, setPhotoName] = useState('')
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
 
     let [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -42,27 +49,57 @@ const BuildProfile = ({navigation}) => {
     };
 
     const handleConfirm = (date) => {
-        setDob(date)
+        setdateOfBirth(date)
         hideDatePicker();
     };
 
-    const handleProfileSubmit = () => {
-        console.log('=>',photo,'<==<')
-        console.log({
-            firstName,
-            lastName,
-            gender,
-            dob,
-            town,
-            street,
-            city,
-            province,
-            phone,
-            cnic
-        });
+    const handleProfileSubmit =async () => {
+        setErrorShow(false);
+        try{
 
+        if(photo===null){
+        setErrorShow(true);
+        setError('please select profile Picture first')
+        }else if(firstName==='' || lastName==='' || gender==='' || dateOfBirth==='' || town==='' || 
+        street==='' || city==='' || province==='' || phone==='' || cnic===''){
+            setErrorShow(true);
+            setError('please fill form completely')
+            }else{
+                await firebase.storage().ref(`/avatars/${cnic}`).put(photo);
+                await  firebase.storage().ref('/avatars').child(cnic)
+                .getDownloadURL().then(async (uri)=>{
+            var val={
+                firstName,
+                lastName,
+                gender,
+                dateOfBirth,
+                town,
+                street,
+                city,
+                province,
+                phone,
+                cnic,
+                userId:id,
+                profilePic:uri
 
-        navigation.navigate('dashboard-app')
+            };
+            var {data} = await axios.post(`${Root.production}/user/buildIndividualAccount`,val)
+            if(data.status==200){
+                console.log('succress ==> buildProfile');
+                navigation.navigate('EmailVerification',{id:id})
+            }else{
+                setErrorShow(true);
+                setError(data.message)        
+            }
+        })
+    }
+    }
+    catch(err){
+        setErrorShow(true);
+        setError(err.message)        
+    }
+
+        // navigation.navigate('dashboard-app')
     }
 
 
@@ -101,7 +138,7 @@ const BuildProfile = ({navigation}) => {
                     </View>
                     <View style={styles.searchSection} >
                         <TouchableOpacity onPress={showDatePicker} style={{ flexDirection: 'row', alignItems: 'center', height: 50, justifyContent: 'space-between' }} >
-                            <Text>{dob ? (`${dob}`) : ('Date Of Birth')}</Text>
+                            <Text>{dateOfBirth ? (`${dateOfBirth}`) : ('Date Of Birth')}</Text>
                             <FeatherIcon name='calendar' size={20} color="#000" />
                         </TouchableOpacity>
                         <DateTimePickerModal
@@ -159,6 +196,18 @@ const BuildProfile = ({navigation}) => {
                         <Text>{photo === '' ? '' : photoName}</Text>
                         </View>
                     </View>
+                    {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Profile Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
                     <Button mode='contained' style={styles.submitBtn} onPress={handleProfileSubmit} >Submit</Button>
 
                 </View>

@@ -5,3 +5,12 @@ return{
 }
 
 }
+
+export const setUserData = (val)=>{
+
+    return{
+        type:'setUser',
+        val:val
+    }
+    
+    }

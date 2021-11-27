@@ -1,21 +1,24 @@
 import React from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Pressable } from 'react-native'
 import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
+import { Link } from '@react-navigation/native';
 
-const AuctionCard = () => {
+const AuctionCard = ({data}) => {
     return (
-        <TouchableOpacity>
+        <Pressable>
             <View style={styles.auctionCard} >
-                <Text>AUCTION</Text>
-                <Title>Auction #jknsjdkn</Title>
-                <Text>From : Destination</Text>
-                <Text>To: Desitaination</Text>
+                <Title>Auction # {data._id}</Title>
+                <Text>From : {data.pickupCity}</Text>
+                <Text>To: {data.destinationCity}</Text>
                 <View style={{flexDirection:'row',alignItems:'center'}} >
-            <Text>Status: </Text><StatusBadge />
+            <Text>Status: </Text><StatusBadge tag={data.status}/>
             </View>
+                <Link to={{ screen: 'AuctionDetails', params: { id: data._id } }}>
+                View Details &gt;&gt;
+                </Link>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 
