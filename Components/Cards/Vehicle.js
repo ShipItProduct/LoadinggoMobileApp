@@ -2,19 +2,22 @@ import React from 'react'
 import { StyleSheet, View , Text, TouchableOpacity } from 'react-native'
 import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
+import { Link } from '@react-navigation/native';
 
-const Vehicle = () => {
+const Vehicle = ({data}) => {
     return (
         <TouchableOpacity>
         <View style={styles.vehicleCard} >
-            <Text>VEHICLE</Text>
-            <Title>Vehicle #jknsjdkn</Title>
-            <Text>Name: </Text>
-            <Text>Model:</Text>
-            <Text>Color: </Text>
+            <Title>Vehicle # {data._id}</Title>
+            <Text>Manufacturer : {data.manufacturer}</Text>
+            <Text>Model: {data.model}</Text>
+            <Text> Model Year : {data.year} </Text>
             <View style={{flexDirection:'row',alignItems:'center'}} >
-            <Text>Status: </Text><StatusBadge tag='On Hold' />
+            <Text>Status: </Text><StatusBadge tag={data.status} />
             </View>
+                <Link to={{ screen: 'vehicleDetails', params: { id:data._id  } }}>
+                View Details &gt;&gt;
+                </Link>
         </View>
         </TouchableOpacity>
     )

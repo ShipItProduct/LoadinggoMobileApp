@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { View , Text, StyleSheet} from 'react-native'
+import { View, StyleSheet} from 'react-native'
 import { Headline , TextInput, Button} from 'react-native-paper'
 import axios from 'axios';
 import { Root } from '../Config/root';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Heading } from 'native-base';
+import {Text,Heading} from 'native-base'
 
 const EnterEmailForForgetPassword = ({navigation}) => {
 
@@ -14,20 +14,35 @@ const EnterEmailForForgetPassword = ({navigation}) => {
 
 
     const handleEmailSubmit =async () =>{
+        setErrorShow(false);
+        try{
+
         setErrorShow(false)
         if(email===''){
             setErrorShow(true);
             setError('Please enter your email first')
         }else{
-            var {data} =await axios.post(`${Root.production}/user/forgetPassword`,{email});
+            var {data} =await axios.post(`${Root.production}/user/forgetPasswordMobile`,{email});
+            console.log('ho rha hai==>',data.status,'====',data.message)
             if(data.status==200){
-                navigation.navigate('ResetPassword')
+                console.log(data.message+2)
+                navigation.navigate('ResetPassword',{
+                    code1 : data.message
+                })
+            }else if(data.status==404){
+                setErrorShow(true);
+                setError(data.message)
             }
             else{
                 setErrorShow(true);
                 setError(data.message)
             }
         }
+    }catch(err){
+        setErrorShow(true);
+        setError(err.message)
+    }
+
     }
 
     return (

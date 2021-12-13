@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "780700793736",
+    "project_id": "shipitapp-39462",
+    "storage_bucket": "shipitapp-39462.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780700793736:android:fc6e81940b87299f78d83d",
+        "android_client_info": {
+          "package_name": "com.loadinggo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "780700793736-r9qkjek7nt7cjpe0lg4295sri0jhr6db.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.loadinggo",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAf-_VXCzos65uQST3_pHw8hYBSXRDAFT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

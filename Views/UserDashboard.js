@@ -1,83 +1,191 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import { Headline, Surface,  Title } from 'react-native-paper';
-import { useSelector } from 'react-redux';
-import AuctionCard from '../Components/Cards/AuctionCard';
-import Shipment from '../Components/Cards/Shipment';
-import Trip from '../Components/Cards/Trip';
+import {Root} from './../Config/root'
+import axios from 'axios';
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
 
 
 const UserDashboard = () => {
 
+    const user = useSelector(state=>state.user);
+    const userId = user?.account?._id;
+    const [activeShipments,setActiveShipments]  =useState(9)
+    const [pendingShipments,setPendingShipments]  =useState(0)
+    const [completeShipments,setCompleteShipments]  =useState(0)
+    const [activeOrders,setActiveOrders]  =useState(0)
+    const [pendingOrders,setPendingOrders]  =useState(0)
+    const [completeOrders,setCompleteOrders]  =useState(0)
+    const [pendingTrips,setPendingTrips]  =useState(0)
+    const [cancelledTrips,setCancelledTrips]  =useState(0)
+    const [closedTrips,setClosedTrips]  =useState(0)
+
+    const updation = useSelector(state=>state.updation)
+    
+    
+    useEffect(()=>{
+        fetching();
+    },[updation])
+
+    const fetching = async()=>{
+    // ACTIVEORDERS
+    try{
+
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierActiveShipment`,{carrierId:userId})
+    if(data.status==200){
+      setActiveOrders(data.message)
+    }
+
+    // Active Shipments
+    var {data} = await axios.post(`${Root.production}/trip/countShipperActiveShipment`,{accountId:userId})
+    if(data.status==200){
+      setActiveShipments(data.message)
+    }
+    
+    // PENDING ORDERS
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierPendingShipment`,{carrierId:userId})
+    if(data.status==200){
+      setPendingOrders(data.message)
+    }
+    
+    // PENDING shipments
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierShipperPendingShipment`,{accountId:userId})
+    if(data.status==200){
+      setPendingShipments(data.message)
+    }
+    
+    // completed ORDERS
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierCompleteShipment`,{carrierId:userId})
+    if(data.status==200){
+      setCompleteOrders(data.message)
+    }
+    
+    // completed shipments
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierShipperCompleteShipment`,{accountId:userId})
+    if(data.status==200){
+      setCompleteShipments(data.message)
+    }
+    
+    // active trips
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierActiveTrips`,{carrierId:userId})
+    if(data.status==200){
+      setPendingTrips(data.message)
+    }
+
+    // closed trips
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierClosedTrips`,{carrierId:userId})
+    if(data.status==200){
+      setClosedTrips(data.message)
+    }   
+
+    // cancel trips
+    var {data} = await axios.post(`${Root.production}/trip/countCarrierCancelledTrips`,{carrierId:userId})
+    if(data.status==200){
+      setCancelledTrips(data.message)
+    }
+}
+catch(err){
+    console.log(err.message)
+}
+    }
 
     const currentRole = useSelector(state => state.role)
-
-    console.log('userDash==>',currentRole);
-
-
-
-
 
     return (
  
             < ScrollView style={styles.shipperDashboardPage} >
             <View style={{flexDirection:'row' , alignItems:'center', justifyContent:'space-between'}} >
-                <Headline style={{width:'50%'}} >Welcome back, {currentRole}</Headline>
+                <Headline style={{width:'90%',fontFamily:'cursive',fontSize:30,marginTop:20,fontWeight:'bold'}} >{`Welcome back, ${currentRole}`}</Headline>
             </View>
             <View style={styles.dashboardStats}  >
                 <Surface style={styles.dashStatItem} >
-                    <Text style={{ color: 'black' }} >
+                    <Text style={{ color: 'black',textAlign:'center' ,paddingHorizontal:10}} >
                         Active Offers:
                     </Text>
-                    <Text>10</Text>
+                    <Text>{activeOrders}</Text>
                 </Surface>
                 <Surface style={styles.dashStatItem} >
-                    <Text style={{ color: 'black' }} >
+                    <Text style={{ color: 'black' ,textAlign:'center' ,paddingHorizontal:10}} >
                         Completed Offers:
                     </Text>
-                    <Text>10</Text>
+                    <Text>{completeOrders}</Text>
                 </Surface>
                 <Surface style={styles.dashStatItem} >
-                    <Text style={{ color: 'black' }} >
-                        Feedback:
+                    <Text style={{ color: 'black' ,textAlign:'center' ,paddingHorizontal:10}} >
+                        Pending Offers:
                     </Text>
-                    <Text>10</Text>
+                    <Text>{pendingOrders}</Text>
                 </Surface>
             </View>
-            <Title>Active Offers</Title>
-            <Shipment />
-            <Shipment />
-            <Shipment />
-            <Title>Open Auctions</Title>
-            <AuctionCard />
-            <AuctionCard />
-            <AuctionCard />
+            <View style={styles.dashboardStats}  >
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center' ,paddingHorizontal:10}} >
+                        Active Shipments:
+                    </Text>
+                    <Text>{activeShipments}</Text>
+                </Surface>
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center' ,paddingHorizontal:10}} >
+                        Completed Shipments:
+                    </Text>
+                    <Text>{completeShipments}</Text>
+                </Surface>
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center' ,paddingHorizontal:10}} >
+                    Pending Shipments:
+                    </Text>
+                    <Text>{pendingShipments}</Text>
+                </Surface>
+            </View>
+
+            <View style={styles.dashboardStats}  >
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center',paddingHorizontal:15 }} >
+                        Active Trips:
+                    </Text>
+                    <Text>{pendingTrips}</Text>
+                </Surface>
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center',paddingHorizontal:10 }} >
+                        Cancelled Trips:
+                    </Text>
+                    <Text>{cancelledTrips}</Text>
+                </Surface>
+                <Surface style={styles.dashStatItem} >
+                    <Text style={{ color: 'black' ,textAlign:'center',paddingHorizontal:10 }} >
+                    Closed Trips:
+                    </Text>
+                    <Text>{closedTrips}</Text>
+                </Surface>
+            </View>
+
         </ScrollView>      
     )
 }
 
 const styles = StyleSheet.create({
     shipperDashboardPage: {
-        width: '90%',
-        alignSelf: 'center'
+        width: '95%',
+        alignSelf: 'center',
     },
     dashboardStats: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 30,
-        marginBottom: 30,
-        width: '90%',
+        marginTop: 40,
+        width: '100%',
         alignSelf: 'center'
     },
     dashStatItem: {
         alignItems: 'center',
-        height: 95,
-        width: 95,
+        height: 100,
+        width: '32%',
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 4,
-        textAlign: 'center'
+        elevation: 2,
+        textAlign: 'center',
+        backgroundColor:'lightblue',
     }
 })
 

@@ -6,39 +6,52 @@ import {Center,Heading} from 'native-base'
 import axios from 'axios';
 import { Root } from '../Config/root';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
 import StarRating from 'react-native-star-rating';
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
 
-const UserProfile = ({navigation}) => {
 
-    // console.log('getItem==>',user);
-    // user = JSON.parse(user);
-    var user=useSelector(state=>state.user);
+const UserProfile = ({navigation,route}) => {
+
+    var {id} = route.params;
     const [userData,setUserData] = useState({})
     const [error,setError] = useState('')
     const [errorShow,setErrorShow] = useState(false)
+    const user = useSelector(state=>state.user);
+    const userId = user?.account?._id;
+    const updation = useSelector(state=>state.updation)
 
-useEffect(async()=>{
+    
+useEffect(()=>{
+fetching();
+},[id,updation])
+
+const fetching=async()=>{
     setErrorShow(false)
         // user = JSON.parse(user);
-        var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:user.account._id})
+        try{
+
+        var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:id})
         if(data.status==200){
             setUserData(data.message)
         }else{
             setError(data.message)
             setErrorShow(true)
         }
+    }catch(err){
+        setErrorShow(true)
+        setError(err.message)}
 
-},[])
+}
 
     return (
         <ScrollView>
             {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
                 <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Login Error
+                    Fetching Error
                 </Heading>
                  <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
                     {error}
@@ -46,16 +59,20 @@ useEffect(async()=>{
               </View>
             }            
             <Text style={styles.heading}>My Profile</Text>
-                <View>
+{
+    (id==userId) &&
+            <View>
             <Button  style={{position:'absolute',right:30}} onPress={() => navigation.navigate('edit-profile')}>Edit Profile</Button>
             </View>
+        }
+
         <Center>
             <Avatar.Image style={styles.avatar} size={70} source={{uri:userData.profilePic}} />
             <Text>{userData ? userData.firstName : 'MINHAJ'} {userData.lastName}</Text>
             <StarRating
             disabled={true}
             maxStars={5}
-            rating={userData.rating}
+            rating={Number(userData.rating)}
       />
             </Center>
             <ScrollView>
@@ -99,14 +116,14 @@ const styles = StyleSheet.create({
     },
     tags:{
         fontSize:15,
-        paddingTop:25,
+        paddingTop:15,
         paddingLeft:20,
         textDecorationColor:'black',
         textDecorationLine:'underline'
     },
     data:{
         fontSize:15,
-        paddingTop:25,
+        paddingTop:15,
         paddingLeft:10,
         textDecorationColor:'black',
         textDecorationLine:'underline'

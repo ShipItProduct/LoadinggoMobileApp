@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native'
+import {  StyleSheet, View, TouchableOpacity } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Headline, TextInput, Button, Checkbox } from 'react-native-paper'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -8,7 +8,10 @@ import PhoneInput from "react-native-phone-number-input";
 import * as ImagePicker from 'react-native-image-picker'
 import {Root} from '../Config/root'
 import axios from 'axios';
-import firebase from './../Components/Firebase/Firebase';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Text,Heading} from 'native-base'
+import storage from '@react-native-firebase/storage';
+
 
 const BuildProfile = ({route,navigation}) => {
 
@@ -24,7 +27,7 @@ const BuildProfile = ({route,navigation}) => {
     let [province, setProvince] = useState('')
     let [phone, setPhone] = useState('')
     let [cnic, setCNIC] = useState('')
-    let [photo, setPhoto] = useState(null)
+    let [photo, setPhoto] = useState('')
     let [photoName, setPhotoName] = useState('')
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
@@ -65,8 +68,9 @@ const BuildProfile = ({route,navigation}) => {
             setErrorShow(true);
             setError('please fill form completely')
             }else{
-                await firebase.storage().ref(`/avatars/${cnic}`).put(photo);
-                await  firebase.storage().ref('/avatars').child(cnic)
+                try{
+                await storage().ref(`/avatars/${cnic}`).putFile(photo);
+                  await  storage().ref('/avatars').child(cnic)
                 .getDownloadURL().then(async (uri)=>{
             var val={
                 firstName,
@@ -85,13 +89,16 @@ const BuildProfile = ({route,navigation}) => {
             };
             var {data} = await axios.post(`${Root.production}/user/buildIndividualAccount`,val)
             if(data.status==200){
-                console.log('succress ==> buildProfile');
                 navigation.navigate('EmailVerification',{id:id})
             }else{
                 setErrorShow(true);
                 setError(data.message)        
             }
         })
+    }catch(err){
+        setErrorShow(true);
+        setError(err.message)
+    }
     }
     }
     catch(err){
@@ -198,7 +205,7 @@ const BuildProfile = ({route,navigation}) => {
                     </View>
                     {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
                 <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
                     Profile Error

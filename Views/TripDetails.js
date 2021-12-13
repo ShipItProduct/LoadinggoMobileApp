@@ -1,111 +1,196 @@
 import React,{useState,useEffect} from 'react'
 import StatusBadge from '../Components/StatusBadges/StatusBadge'
-import { Heading,Text,Container,Button ,Stack,Flex} from 'native-base';
+import { Heading,Text,Container,Button } from 'native-base';
 import {ScrollView,StyleSheet,View} from 'react-native';
 import axios from 'axios';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Root } from '../Config/root';
-const TripDetails = ({tripId}) => {
+import TripRoutedMap from './../Components/MapsLocations/TripRouteMap'
+import moment from 'moment';
+import { useSelector,useDispatch } from 'react-redux';
+import { setUpdation } from '../Store/action';
 
+const TripDetails = ({route,navigation}) => {
+
+    const {id} = route.params;
     const [trip,setTrip] = useState({})
     const [vehicle,setVehicle] = useState({})
-
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
+    const updation = useSelector(state=>state.updation)
+    const dispatch = useDispatch();
+    
+    
+    useEffect(()=>{
+      dispatch(setUpdation())
+    },[])
+    
+    
     useEffect(()=>{
         fetching();
-    },[])
+    },[id,updation])
 
     const fetching=async()=>{
-        try{
+        setErrorShow(false);
+try{
     var {data} = await axios.post(`${Root.production}/trip/getTripById`,{
-        tripId
+        tripId:id
     })
     if(data.status==200){
         setTrip(data.message)
-        var vehicleData = await axios.post(`${Root.production}/vehicle/getVehicleById`,{
+            //checking for closing of trips
+            var today = moment().format('YYYY-MM-DD');
+            console.log('TODAY==>',today)
+            console.log('DEPART TIME==>',data.message.departureDate)
+    // var check = moment(today).isBefore(data.message.departureDate)
+    if(today>data.message.departureDate){
+      var closingTesting = await axios.post(`${Root.production}/trip/closeTrip`,{
+        tripId : data.message._id
+      })
+      if(closingTesting.data.status==200){
+          console.log('trip has been closed')
+    //   window.location.reload();
+      }
+    }
+        try{
+        var {data} = await axios.post(`${Root.production}/vehicle/getVehicleById`,{
             vehicleId : data.message.vehicleId
         })
-        if(vehicleData.data.status==200){
-            setVehicle(vehicleData.data.message)
+        if(data.status==200){
+            setVehicle(data.message)
         }else{
-        console.log("erroresg==>",vehicleData.data.message)
+            setErrorShow(true)
+            setError(data.message)
         }
+        }
+        catch(err){
+            setErrorShow(true)
+            setError(err.message)
+        }
+    }
+    else{
+        console.log(data.message)
     }
 }
 catch(err){
-    console.log('err==>',err.message)
+    console.warn(err.message)
 }
     }
+
+    const handleCancel = async()=>{
+        setErrorShow(false);
+        try{
+        var {data} =await axios.post(`${Root.production}/trip/cancelTrip`,{
+          tripId:trip._id
+        });
+        if(data.status==200){
+      dispatch(setUpdation())
+      console.log('success on cancel')
+        }else{
+            setErrorShow(true)
+            setError(data.message)
+        }
+      }catch(err){
+        setErrorShow(true)
+        setError(err.message)
+    }
+    }
+
+const handleViewOffers =()=>{
+    navigation.navigate('MyOffers',{
+        datalist:trip.shipmentOffers
+    })
+}
 
     return (
         <ScrollView>
         <Text style={styles.heading}>Trip Details</Text>
-
-            <View style={{flexDirection:'row',alignItems:'center',marginLeft:20,marginTop:10}} >
-            <Text>Status: </Text><StatusBadge tag='Open' />
-            </View>  
-            <View style={styles.container}>
-                <Heading size="md" style={styles.subheading}>
-                Carrier Details
+        {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Login Error
                 </Heading>
-                <Container style={styles.data}>
-                    <Text>
-                    CarrierId : {trip.accountId}
-                    </Text>
-                </Container>
-                
-                <Heading size="md" style={styles.subheading}>
-                Trip Details
-                </Heading>
-                <Container style={styles.data}>
-                    <Text>
-                    Trip Id : {trip._id}
-                    </Text>
-                    {/* <Text>
-                        Contact Number : 03170112110
-                    </Text>                     */}
-                    <Text>
-                    From : {trip.departureCity}
-                    </Text>
-                    <Text>
-                    To : {trip.destinationCity}
-                    </Text>
-                    <Text>
-                    Departure : {trip.departureAddress}
-                    </Text>
-                    <Text>
-                    Destination : {trip.destinationAddress}
-                    </Text>
-                    <Text>
-                    Departure Date : {trip.departureDate}
-                    </Text>
-                    <Text>
-                    Departure Time : {trip.departureTime}
-                    </Text>
-                </Container>
-               
-                <Heading size="md" style={styles.subheading}>
-                Vehicle Details
-                </Heading>
-                <Container style={styles.data}>
-                    <Text>
-                    Vehicle Id : {vehicle._id}
-                    </Text>
-                    <Text>
-                    Manufacturer : {vehicle.manufacturer}
-                    </Text>                    
-                    <Text>
-                    Model : {vehicle.model}
-                    </Text>
-                    <Text>
-                    Year : {vehicle.year}
-                    </Text>
-                    <Text>
-                    Number Plate : {vehicle.licensePlate}
-                    </Text>
-                </Container>
-                {/* <Flex h={40} w={100} ml={'50%'} mt={5} mb={-20}>
-                    <Button>Proceed</Button>
-                </Flex> */}
-            </View> 
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }  
+        <View style={{flexDirection:'row',alignItems:'center',marginLeft:20,marginTop:10}} >
+<Text>Status: </Text><StatusBadge tag={trip?.status} />
+<Button size={'sm'} ml={3} onPress={handleViewOffers}>View Offers</Button>
+{ (trip?.status==='Open')
+     &&
+<Button size={'sm'} ml={3} colorScheme="danger" onPress={handleCancel}>Cancel Trip</Button>
+}
+</View>  
+<View style={styles.container}>
+    <Heading size="md" style={styles.subheading}>
+    Carrier Details
+    </Heading>
+    <Container style={styles.data}>
+        <Text>
+        CarrierId : {trip?.accountId}
+        </Text>
+    </Container>
+    
+    <Heading size="md" style={styles.subheading}>
+    Trip Details
+    </Heading>
+    <Container style={styles.data}>
+        <Text>
+        Trip Id : {trip?._id}
+        </Text>
+        <Text>
+        From : {trip?.departureCity}
+        </Text>
+        <Text>
+        To : {trip?.destinationCity}
+        </Text>
+        <Text>
+        Departure : {trip?.departureAddress}
+        </Text>
+        <Text>
+        Destination : {trip?.destinationAddress}
+        </Text>
+        <Text>
+        Departure Date : {trip?.departureDate}
+        </Text>
+        <Text>
+        Departure Time : {trip?.departureTime}
+        </Text>
+    </Container>
+   
+    <Heading size="md" style={styles.subheading}>
+    Vehicle Details
+    </Heading>
+    <Container style={styles.data}>
+        <Text>
+        Vehicle Id : {vehicle?._id}
+        </Text>
+        <Text>
+        Manufacturer : {vehicle?.manufacturer}
+        </Text>                    
+        <Text>
+        Model : {vehicle?.model}
+        </Text>
+        <Text>
+        Year : {vehicle?.year}
+        </Text>
+        <Text>
+        Number Plate : {vehicle?.licensePlate}
+        </Text>
+    </Container>
+    {(trip?.departureLattitude) &&
+                    <TripRoutedMap
+                    departurelati={trip?.departureLattitude}
+                    departurelongi={trip?.departureLongitude}
+                    destinationlati={trip?.destinationLattitude}
+                    destinationlongi={trip?.destinationLongitude}
+                    />
+    }
+</View> 
             </ScrollView>
     )
 }
@@ -134,3 +219,5 @@ const styles = StyleSheet.create({
 })
 
 export default TripDetails
+
+

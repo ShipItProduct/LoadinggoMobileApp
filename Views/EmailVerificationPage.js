@@ -16,7 +16,6 @@ const EmailVerificationPage = ({route,navigation}) => {
 
 
     const {id}  = route.params;
-    console.log('id==>',id)
     const [value, setValue] = useState('');
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
@@ -28,6 +27,8 @@ const EmailVerificationPage = ({route,navigation}) => {
 
 
     const handleCodeSubmit =async () =>{
+      if(value===''){
+      }else{
         setErrorShow(false);
       try{
           var send={
@@ -36,8 +37,6 @@ const EmailVerificationPage = ({route,navigation}) => {
           }
           const {data} = await axios.post(`${Root.production}/user/verify`,send);
           if(data.status===200){
-            await AsyncStorage.setItem("user" , JSON.stringify(data.message));
-            await AsyncStorage.setItem("CurrentRole" , 'Shipper');
             navigation.navigate(`dashboard-app`,{id:id})
           }
           else{
@@ -49,6 +48,8 @@ const EmailVerificationPage = ({route,navigation}) => {
           setError(err.message);
           setErrorShow(true)
         }
+
+      }
     }
 
     return (
@@ -76,10 +77,10 @@ const EmailVerificationPage = ({route,navigation}) => {
       />
             {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
                 <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Login Error
+                    Verification Error
                 </Heading>
                  <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
                     {error}

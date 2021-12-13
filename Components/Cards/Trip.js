@@ -4,7 +4,7 @@ import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
 import { Link } from '@react-navigation/native';
 
-const Trip = ({data}) => {
+const Trip = ({data,route}) => {
     return (
         <Pressable>
         <View style={styles.tripCard} >
@@ -12,9 +12,9 @@ const Trip = ({data}) => {
             <Text>From : {data.departureCity}</Text>
             <Text>To: {data.destinationCity}</Text>
             <View style={{flexDirection:'row',alignItems:'center'}} >
-            <Text>Status: </Text><StatusBadge tag='Open'/>
+            <Text>Status: </Text><StatusBadge tag={data.status}/>
             </View>
-                <Link to={{ screen: 'CreateRequest', params: { id: data._id } }}>
+                <Link to={{ screen: route, params: { id: data._id } }}>
                 View Details &gt;&gt;
                 </Link>
         </View>

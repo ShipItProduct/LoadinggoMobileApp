@@ -14,3 +14,13 @@ export const setUserData = (val)=>{
     }
     
     }
+
+
+    export const setUpdation = ()=>{
+
+        return{
+            type:'Updation',
+        }
+        
+        }
+        

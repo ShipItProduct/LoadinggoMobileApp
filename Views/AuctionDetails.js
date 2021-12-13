@@ -1,15 +1,20 @@
 import React,{useState,useEffect} from 'react'
-import {ScrollView,StyleSheet,View} from 'react-native';
+import {Alert,ScrollView,StyleSheet,View} from 'react-native';
 import StatusBadge from '../Components/StatusBadges/StatusBadge'
 import moment from 'moment';
-import { Heading,Text,Container,Button ,VStack,Flex,Center,Modal} from 'native-base';
+import {Container,Button ,Modal} from 'native-base';
 import axios from 'axios';
 import {Root} from '../Config/root';
+import TripRoutedMap from './../Components/MapsLocations/TripRouteMap';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Text,Heading} from 'native-base'
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
+
 
 const AuctionDetails = ({route}) => {
 
     const {id} = route.params;
-    console.log('auctionDetails==>',id)
     const [auction,setAuction] = useState({});
     const [bidsList,setBidsList] = useState([]);
     const [auctionStatus,setauctionStatus] = useState('Open');
@@ -17,11 +22,21 @@ const AuctionDetails = ({route}) => {
     const [error,setError] = useState('')
     const [errorShow,setErrorShow] = useState(false)
     var [open,setOpen] = useState(false);
+    const updation = useSelector(state=>state.updation)
+    const dispatch = useDispatch();
+
+
+useEffect(()=>{
+  dispatch(setUpdation())
+},[])
+
 
     useEffect(()=>{
         fetching();
-    },[])
+    },[id,updation])
     const fetching=async()=>{
+      setErrorShow(false);
+        try{
         var {data} = await axios.post(`${Root.production}/auction/getAuctionById`,{auctionId:id})
         if(data.status==200){
           openTill = moment(data.message?.auctionData?.updatedAt,'YYYY-MM-DD');      
@@ -37,8 +52,13 @@ const AuctionDetails = ({route}) => {
             setError(data.message)
             setErrorShow(true)
         }
+    }catch(err){
+        setError(err.message)
+        setErrorShow(true)
+    }
         var today=moment().format('DD-MM-YYYY');
         if(today>openTill){
+        try{
           var {data} = await axios.post(`${Root.production}/auction/terminateAuction`,{
             auctionId : id
           })
@@ -49,29 +69,52 @@ const AuctionDetails = ({route}) => {
             setError(data.message)
             setErrorShow(true)
           }
+        }catch(err){
+            setError(err.message)
+            setErrorShow(true)
+        }
         }
     }
       
       const closeAuction=async()=>{
-        var {data} = await axios.post(`${Root.production}/auction/terminateAuction`,{
-          auctionId : id
-        })
-        if(data.status==200){
-          setauctionStatus('Closed');
-          setOpen(false);
-        }
-        else{
-            setError(data.message)
+      setErrorShow(false);
+          try{
+              var {data} = await axios.post(`${Root.production}/auction/terminateAuction`,{
+                auctionId : id
+              })
+              if(data.status==200){
+        dispatch(setUpdation())
+        setauctionStatus('Closed');
+                setOpen(false);
+              }
+              else{
+                  setErrorShow(true)
+                  setError(data.message)
+              }
+          }catch(err){
             setErrorShow(true)
+            setError(err.message)
         }
       }
   
     
       const handleChooseBid=async(auctionId,bidId)=>{
+      setErrorShow(false);
+          try{
         var {data} = await axios.post(`${Root.production}/auction/chooseBid`,{auctionId,bidId})
         if(data.status==200){
           setauctionStatus('On Hold');     
+        //   navigation.navigate('MyAuctions')
+        dispatch(setUpdation())
         }
+        else{
+            setErrorShow(true)
+            setError(data.message)
+        }
+    }catch(err){
+      setErrorShow(true)
+      setError(err.message)
+  }
       }
 
     return (
@@ -96,6 +139,18 @@ const AuctionDetails = ({route}) => {
       </Modal>
 
             <Text style={styles.heading}>Auction Details</Text>
+            {
+              (errorShow && error!='"bidsList" is read-only') &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Fetching Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
             <Text style={styles.heading1}>Auction Id # {id}</Text>
 
             <View style={{flexDirection:'row',alignItems:'center',marginLeft:20,marginTop:10}} >
@@ -190,6 +245,15 @@ const AuctionDetails = ({route}) => {
                     Auction Open Till  : {openTill}
                     </Text>
                 </Container>
+                {(auction?.auctionData?.pickupLattitude) &&
+                    <TripRoutedMap
+                    departurelati={auction?.auctionData?.pickupLattitude}
+                    departurelongi={auction?.auctionData?.pickupLongitude}
+                    destinationlati={auction?.auctionData?.dropOffLattitude}
+                    destinationlongi={auction?.auctionData?.dropOffLongitude}
+                    />
+
+                }
                 <Container>
                     <View style={{flexDirection:'row',marginTop:10}}>
                         <Text style={styles.bidsHeading}>Carrier Id</Text>

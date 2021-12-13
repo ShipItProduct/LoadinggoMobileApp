@@ -7,6 +7,7 @@ import {Root} from '../Config/root'
 import {Heading} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+
 const Register = ({navigation}) => {
 
     let [username , setUserName] = useState('')
@@ -50,23 +51,30 @@ const Register = ({navigation}) => {
       setDisabled(false)
     }
 
-
     GoogleSignin.configure({
-        scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
-        webClientId: '691558783259-segcfdciideiapg249ad84lholp7sila.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-        forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
-        accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
-        androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
-    });
+      webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
+      // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
+  });
 
-      const signIn = async () => {
+      const signUpWithGoogle = async () => {
+        setErrorShow(false);
         try {
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
-          const currentUser = await GoogleSignin.getCurrentUser();
-        //   setState({ userInfo });
-        console.log(userInfo,'==>>',currentUser)
+        const {data} = await axios.post(`${Root.production}/user/register` , {email:userInfo.user.email , 
+          password:userInfo.user.id,username:userInfo.user.name})
+        if(data.status==200){
+          navigation.navigate('BuildProfile',{id:data.message.id})
+        }else if(data.status==409){
+          setError(data.mesaage)
+          setErrorShow(true);
+        }
+        else{
+          setError(data.message)
+          setErrorShow(true);
+        }
+
         } catch (error) {
             console.log(error.message)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -92,8 +100,8 @@ const Register = ({navigation}) => {
             <Text style={styles.header} >To begin, sign up with an option below</Text>
             {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
-                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120'}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
                     Registration Error
                 </Heading>
@@ -121,8 +129,8 @@ const Register = ({navigation}) => {
   style={{ width: 250, height: 48 }}
   size={GoogleSigninButton.Size.Wide}
   color={GoogleSigninButton.Color.Light}
-  onPress={()=>signIn()}
-//   disabled={this.state.isSigninInProgress}
+  onPress={()=>signUpWithGoogle()}
+  //   disabled={this.state.isSigninInProgress}
 />   
 <LoginButton
             style={{width:250,height:35,backgroundColor:"blue"}}

@@ -4,8 +4,7 @@ import { StyleSheet, View , Text,Pressable } from 'react-native'
 import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
 import { Link } from '@react-navigation/native';
-const Shipment = ({data}) => {
-    console.log(data.status)
+const Shipment = ({data,path}) => {
     return (
         <Pressable>
         <View style={styles.shipmentCard} >
@@ -16,8 +15,7 @@ const Shipment = ({data}) => {
             <View style={{flexDirection:'row',alignItems:'center'}} >
             <Text>Status: </Text><StatusBadge tag={data.status} />
             </View>
-            <Text>Cost: $$$</Text>
-                <Link to={{ screen: 'shipmentDetails', params: { id:data._id  } }}>
+                <Link to={{ screen: path, params: { id:data._id  } }}>
                 View Details &gt;&gt;
                 </Link>
         </View>

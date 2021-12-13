@@ -1,36 +1,70 @@
 import React,{useEffect,useState} from 'react'
-import {ScrollView,Text,StyleSheet,View} from 'react-native';
-import {Button} from 'native-base'
+import {ScrollView,StyleSheet,View} from 'react-native';
 import Trip from '../Components/Cards/Trip';
 import axios from 'axios';
 import { Root } from '../Config/root';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Text,Heading} from 'native-base'
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
+
 
 const AvailableTrips = () => {
 
     const [allTrips,setAllTrips] = useState([]);
-
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
+    const updation = useSelector(state=>state.updation)
+    const dispatch = useDispatch();
+    
+    
+    useEffect(()=>{
+      dispatch(setUpdation())
+    },[])
+    
     useEffect(()=>{
         fectching();
-    },[])
+    },[updation])
 
     const fectching=async()=>{
+      setErrorShow(false);
+        try{
         var {data} = await axios.get(`${Root.production}/trip/getAllActiveTrips`);
         if(data.status===200){
             setAllTrips(data.message);
-            console.log('done hai')
         }else{
-            console.log('error hai')
+            setErrorShow(true)
+            setError(err.message)
         }
+    }
+    catch(err){
+        setErrorShow(true)
+        setError(err.message)
+    }
     }
 
     return (
         <View>
             <Text style={styles.heading}>Available Trips</Text>
+            {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Fetching Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
       <ScrollView>
           {allTrips &&
           allTrips.reverse().map((v,i)=>{
               return(
-                  <Trip  data={v}/>
+                  <View key={i}>
+                  <Trip route={'CreateRequest'} data={v}/>
+                </View>
               )
           })}
         </ScrollView>

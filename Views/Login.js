@@ -20,22 +20,43 @@ const Login = ({navigation}) => {
     const [disabled , setDisabled] = useState(false)
 
     GoogleSignin.configure({
-        scopes: ['https://www.googleapis.com/auth/drive.readonly'], // [Android] what API you want to access on behalf of the user, default is email and profile
-        webClientId: '691558783259-segcfdciideiapg249ad84lholp7sila.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-        forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
-        accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
-        androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
+        webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+        // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
+        // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
     });
 
       const signIn = async () => {
+        setErrorShow(false);
         try {
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
-          const currentUser = await GoogleSignin.getCurrentUser();
         //   setState({ userInfo });
-        console.log(userInfo,'==>>',currentUser)
-        } catch (error) {
+        console.log('as==>>',userInfo.user.name)
+        console.log('as==>>',userInfo.user.email)
+        console.log('as==>>',userInfo.user.id)
+        const {data} = await axios.post(`${Root.production}/user/login` , {email: userInfo.user.email , password:userInfo.user.id})
+        if(data.status==200){
+          if (data.message.account.verified == true) {
+            dispatch(setUserData(data.message))
+            navigation.navigate('dashboard-app')
+            setPassword('')
+          }
+          else{
+            navigation.navigate(`EmailVerification`,{
+              id:data.message.account._id
+            });
+          }
+        } else if (data.status == 403) {
+          navigation.navigate('BuildProfile',{
+            id:data.message.userId
+          })
+        } else{
+          setError(data.message)
+          setErrorShow(true);
+        }
+
+      } 
+        catch (error) {
             console.log(error.message)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             // user cancelled the login flow
@@ -52,31 +73,44 @@ const Login = ({navigation}) => {
           }
         }
       };
-  
-
-
 
     const handleLogin = async () =>{
+      if(email!=='' || password!==''){
       setDisabled(true)
       setErrorShow(false);
         try {
             // setDisabled(true)
             const {data} = await axios.post(`${Root.production}/user/login` , {email: email , password:password})
             if(data.status==200){
-              dispatch(setUserData(data.message))
-              navigation.navigate('dashboard-app')
-            }else{
+              if (data.message.account.verified == true) {
+                dispatch(setUserData(data.message))
+                navigation.navigate('dashboard-app')
+                setPassword('')
+              }
+              else{
+                navigation.navigate(`EmailVerification`,{
+                  id:data.message.account._id
+                });
+              }
+            } else if (data.status == 403) {
+              navigation.navigate('BuildProfile',{
+                id:data.message.userId
+              })
+            } else{
               setError(data.message)
               setErrorShow(true);
             }
 
             // setDisabled(false)
         } catch (error) {
-          setError(data.message)
+          setError(error.message)
           setErrorShow(true);
-
         }
       setDisabled(false)
+    }
+    else{
+      
+    }
     }
 
 
@@ -87,8 +121,8 @@ const Login = ({navigation}) => {
             <Text style={styles.header} >Please Log In To Continue</Text>
             {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
-                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120'}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
                     Login Error
                 </Heading>
@@ -100,7 +134,7 @@ const Login = ({navigation}) => {
 
             <View style={{alignItems:'center'}}  >
                 <TextInput label='Email' mode='outlined' style={styles.input} value={email} onChangeText={(text) => setEmail(text) } left={<TextInput.Icon name='email-outline' />}  />
-                <TextInput label='Password' mode='outlined' style={styles.input} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} left={<TextInput.Icon name='lock-outline' />} />
+                <TextInput label='Password'  mode='outlined' style={styles.input} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} left={<TextInput.Icon name='lock-outline' />} />
                 <Text
                 onPress={() => navigation.navigate('EnterEmailForForgetPassword')}
                 style={{color:'blue'}}>

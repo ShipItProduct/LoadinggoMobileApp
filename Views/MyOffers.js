@@ -4,24 +4,24 @@ import {Button,Flex,HStack,VStack,Select,CheckIcon,Text} from 'native-base'
 import Shipment from '../Components/Cards/Shipment';
 import { Cities } from '../Components/Cities/Cities';
 import axios from 'axios';
-import {Root} from '../Config/root';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Heading} from 'native-base'
+import {Root} from '../Config/root';
 import { useSelector,useDispatch } from 'react-redux';
 import { setUpdation } from '../Store/action';
 
+const MyOffers = ({route}) => {
 
-const MyShipments = () => {
-
+const {datalist,accountId} = route?.params;
 const [showFilter,setShowFilter] = useState(false);
 const [from,setFrom] = useState('');
 const [to,setTo] = useState('');
 var [shipments,setShipments] = useState([]);
-const [myAllShipments,setMyAllShipments] = useState([]);
+var [myAllOffers,setMyAllOffers] = useState([]);
 const [error,setError] = useState('')
 const [errorShow,setErrorShow] = useState(false)
-const user = useSelector(state=>state.user);
-var userId = user?.account?._id;
+const user = useSelector(state=>state.user)
+var [userId,setUserId] = useState(user?.account?._id)
 const updation = useSelector(state=>state.updation)
 const dispatch = useDispatch();
 
@@ -30,34 +30,47 @@ useEffect(()=>{
   dispatch(setUpdation())
 },[])
 
-
 useEffect(()=>{
 fetching();
 handleDataFilter('All')
-
-},[updation])
+},[datalist,accountId,updation])
 
 const fetching=async()=>{
   setErrorShow(false);
   try{
-    var {data} =  await axios.post(`${Root.production}/trip/getShipmentOfferByUser`,{
-        accountId : userId
-    })
-    if(data.status==200){
-      shipments=data.message;
-      setShipments(data.message)
-        setMyAllShipments(data.message)
+    setMyAllOffers([]);
+    if(datalist==null ||datalist==undefined){
+      var {data} = await axios.post(`${Root.production}/trip/getShipmentOffersByCarrier`,{carrierId:accountId})
+      if(data.status==200){
+        myAllOffers=data.message
+        setMyAllOffers(myAllOffers);
+      }else{
+  setError(data.message)
+  setErrorShow(true)}
+    }else{
+        datalist.map(async(v,i)=>{
+          var {data} = await axios.post(`${Root.production}/trip/getShipmentById`,{shipmentOfferId:v});
+          if(data.status==200){
+            if(data.message.status=='Pending'){
+              myAllOffers=[...myAllOffers,data.message];
+              setMyAllOffers(myAllOffers);
+                      }
+                      handleDataFilter('All')
+          }else{
+            setError(data.message)
+            setErrorShow(true)
+              }
+      })
     }
-    else{
-        setError(data.message)
-        setErrorShow(true)
-    }
+ 
+    myAllOffers=myAllOffers.reverse()
+    setMyAllOffers(myAllOffers);
 }
 catch(err){
 setError(err.message)
 setErrorShow(true)
 }
-userId=1;
+userId=1
 }
 
 const handleDataFilter = (type)=>{
@@ -68,7 +81,7 @@ const handleDataFilter = (type)=>{
     //   filter= type;
 //   setFilter(filter);
   shipments.push(
-    myAllShipments.filter((val) => {
+    myAllOffers.filter((val) => {
       var check = val.status === type;
       if (check) {
         return val;
@@ -82,7 +95,7 @@ const handleDataFilter = (type)=>{
   }
   // end of all checking
   else{
-    shipments=myAllShipments;
+    shipments=myAllOffers;
     setShipments(shipments)
   }
     }
@@ -93,7 +106,7 @@ const handleDataFilter = (type)=>{
         if (from !== "" && to === "") {
           // PUSH METHOD FOR FILTER FROM
           shipments.push(
-            myAllShipments.filter((val) => {
+            myAllOffers.filter((val) => {
               var check = val.pickupCity == from;
               if (check) {
                 return val;
@@ -108,7 +121,7 @@ const handleDataFilter = (type)=>{
         if (to !== "" && from === "") {
           // PUSH METHOD FOR FILTER TO
           shipments.push(
-            myAllShipments.filter((val) => {
+            myAllOffers.filter((val) => {
               var gotit = val.destinationCity == to;
               if (gotit) {
                 return val;
@@ -121,13 +134,13 @@ const handleDataFilter = (type)=>{
         }
     
         if (to === "" && from === "") {
-          shipments = myAllShipments;
+          shipments = myAllOffers;
           setShipments(shipments);
         }
         if (from !== "" && to !== "") {
           // PUSH METHOD FOR FILTER TO
           shipments.push(
-            myAllShipments.filter((val) => {
+            myAllOffers.filter((val) => {
               var gotit = val.destinationCity === to && val.pickupCity === from;
               if (gotit) {
                 return val;
@@ -143,6 +156,8 @@ const handleDataFilter = (type)=>{
 
 
 const toggleFilter =()=>{
+    setTo('');
+    setFrom('');
         setShowFilter(!showFilter)
 }
 
@@ -156,7 +171,12 @@ const handleChange=(city,type)=>{
 
     return (
         <View>
-            <Text style={styles.heading}>My Shipments</Text>
+            <Text style={styles.heading}>My Offers</Text>
+                <Flex ml={250} mr={10}>
+            <Button onPressIn={toggleFilter}>
+                Filter                
+            </Button>
+            </Flex>
             {
               errorShow &&
               <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
@@ -169,11 +189,6 @@ const handleChange=(city,type)=>{
                 </Text>
               </View>
             }
-                <Flex ml={250} mr={10}>
-            <Button onPressIn={toggleFilter}>
-                Filter                
-            </Button>
-            </Flex>
             {
                 showFilter==true &&
             <Flex style={{backgroundColor:'lightgray',borderRadius:5}} h={55} mt={2} w={"80%"} ml={"10%"}>
@@ -231,6 +246,7 @@ const handleChange=(city,type)=>{
                 </HStack>
             </Flex>
             }
+            { (datalist==null ||datalist==undefined) &&
             <Button.Group
             style={styles.btn_group}
       colorScheme="blue"
@@ -241,18 +257,17 @@ const handleChange=(city,type)=>{
     >
       <Button onPress={()=>handleDataFilter('All')} size="xs" style={styles.button1}>All</Button>
       <Button onPress={()=>handleDataFilter('Active')} size="xs" style={styles.button}>Active</Button>
-      <Button onPress={()=>handleDataFilter('Pending')} size="xs" style={styles.button}>Pending</Button>
       <Button onPress={()=>handleDataFilter('Completed')} size="xs" style={styles.button}>Completed</Button>
       <Button onPress={()=>handleDataFilter('Waiting')} size="xs" style={styles.button}>Waiting</Button>
     </Button.Group>
+            }
+
       <ScrollView style={{marginBottom:170}}>
           {
             shipments &&
             shipments.reverse().map((v,i)=>{
                 return(
-                  <>
-                    <Shipment path="shipmentDetails" data={v}/>
-                  </>
+                    <Shipment path="offerDetails" data={v}/>
                 )
             })  
           }
@@ -285,4 +300,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default MyShipments
+export default MyOffers

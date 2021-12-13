@@ -2,7 +2,6 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
 const StatusBadge = ({ tag }) => {
-
     return (
         tag === 'Active' ? (
             <View style={styles.active} >
@@ -24,7 +23,7 @@ const StatusBadge = ({ tag }) => {
                             <Text style={{ color: 'white' }} >COMPLETED</Text>
                         </View>
                     ) : (
-                        (tag === 'Closed' || tag === 'close')  ? (
+                        (tag === 'Closed' || tag === 'close' ||  tag === 'Close' )  ? (
                             <View style={styles.closed} >
                                 <Text style={{ color: 'white' }} >CLOSED</Text>
                             </View>
@@ -37,10 +36,15 @@ const StatusBadge = ({ tag }) => {
                                 <View style={styles.cancel} >
                                 <Text style={{ color: 'white' }} >CANCELLED</Text>
                             </View>
-                            ) : (
-                                <View style={styles.open} >
-                                    <Text style={{ color: 'white' }} >OPEN</Text>
+                            ) : ( tag==='Expired' ?
+                                <View style={styles.expired} >
+                                    <Text style={{ color: 'white' }} >EXPIRED</Text>
                                 </View>
+                                : 
+                                <View style={styles.open} >
+                                <Text style={{ color: 'white' }} >OPEN</Text>
+                                </View>
+
                             )
                             )
 
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
         padding: 4
     },
     waiting: {
-        backgroundColor: '#1848f7',
+        backgroundColor: 'darkorange',
         borderRadius: 5,
         padding: 4
     },
@@ -94,6 +98,11 @@ const styles = StyleSheet.create({
     },
     cancel: {
         backgroundColor: '#F53131',
+        borderRadius: 5,
+        padding: 4
+    },
+    expired:{
+        backgroundColor: 'black',
         borderRadius: 5,
         padding: 4
     }

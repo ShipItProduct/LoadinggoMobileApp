@@ -1,0 +1,274 @@
+import React,{useState,useEffect} from 'react'
+import { View ,Button, HStack, ScrollView,VStack, Center,Modal} from 'native-base'
+import RoutedMap from './../Components/MapsLocations/routedMap';
+import { Alert, StyleSheet,TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'react-native-image-picker'
+import FeatherIcon from 'react-native-vector-icons/dist/Feather'
+import axios from 'axios';
+import { Root } from '../Config/root';
+import storage from '@react-native-firebase/storage';
+import StarRating from 'react-native-star-rating';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Text,Heading} from 'native-base'
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
+
+
+const ActiveTimeline = ({shipmentData,from}) => {
+
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const [feedback, setFeedback] = useState(2.5);
+    const handleFeedbackOpen = () => setFeedbackOpen(true);
+    const handleFeedbackClose = () => setFeedbackOpen(false);
+    const [disable,setDisable] = useState(false);
+    const [file,setFile]=useState('');
+    const [photoName,setPhotoName]=useState('');
+    const [currentPackage,setCurrentPackage]=useState('');
+    const [currentShipment,setCurrentShipment]=useState('');
+    const [accountId,setAccountId] = useState('');
+    let [error,setError] = useState('');
+    let [errorShow,setErrorShow] = useState(false);
+    const updation = useSelector(state=>state.updation)
+    const dispatch = useDispatch();
+    
+    const handleVerify =(packageId,shipmentId)=>{
+      setCurrentPackage(packageId)
+      setCurrentShipment(shipmentId)
+      handleOpen();
+    }
+  
+    const handleRating =async()=>{
+      setErrorShow(false);
+      try {
+        var {data} = await axios.post(`${Root.production}/trip/giveRating`,{
+          rating:feedback,
+          accountId:accountId
+        })
+        if(data.status==200){
+          handleFeedbackClose();
+          dispatch(setUpdation())
+          Alert.alert("Rating Successfull")
+        }else{
+          setErrorShow(true)
+          setError(data.message)
+        }
+        
+      } catch (err) {
+        setErrorShow(true)
+        setError(err.message)
+        
+      }
+    }
+  
+    const handleCheckVerification= async()=>{
+      setErrorShow(false);
+      try{
+      await storage().ref(`/verify/${currentPackage}`).putFile(file);
+        await  storage().ref('/verify').child(currentPackage)
+        .getDownloadURL().then(async (uri)=>{
+          var {data} = await axios.post(`${Root.production}/trip/uploadShipmentVerificationImage`,{
+            shipmentOfferId : currentShipment ,
+            verificationImage : uri
+          })
+          if(data.status==200){
+            dispatch(setUpdation())
+            handleClose();
+          }else{
+            setErrorShow(true)
+            setError(data.message)
+          }
+        })
+      }
+      catch(err){
+        setErrorShow(true)
+        setError(err.message)      
+      }
+    }
+  
+  const handlePickedUp = async (packageId)=>{
+    setErrorShow(false);
+    try {
+      
+          var {data}  = await axios.post(`${Root.production}/trip/pickupPackage`,{
+            packageId: packageId
+          })
+          if(data.status==200){
+            dispatch(setUpdation())
+            Alert.alert('success in pickup')
+          }
+          else{
+            setErrorShow(true)
+            setError(data.message)}
+      
+    } catch (err) {
+      setErrorShow(true)
+      setError(err.message)
+      
+    }  
+  }
+  
+  const handleDropOff = async (shipmentId,accountId)=>{
+    setErrorShow(false);
+    try {
+      var {data} = await axios.post(`${Root.production}/trip/dropOff`,{
+        shipmentOfferId:shipmentId
+      })
+      if(data.status==200){
+      dispatch(setUpdation())
+      setAccountId(accountId)
+        handleFeedbackOpen();
+      }else{
+        setErrorShow(true)
+        setError(data.message)}
+      
+    } catch (err) {
+      setErrorShow(true)
+      setError(err.message)
+      
+    }
+
+  }
+
+  setTimeout(()=>{
+    setDisable(true)
+  },1000)
+  
+  const handleSkip = async(shipmentId)=>{
+  var {data} = await axios.post(`${Root.production}/trip/cancelShipment`,{
+    shipmentOfferId :shipmentId
+  })
+  if(data.status==200){
+    dispatch(setUpdation())
+  }}
+
+    return (
+        <View style={styles.container}>
+        <Modal isOpen={feedbackOpen} onClose={() => handleFeedbackClose()}>
+             <Modal.Content maxWidth="400px">
+               <Modal.Header>Rate Shipper</Modal.Header>
+               <Modal.Body>
+               <StarRating
+            maxStars={5}
+            fullStarColor="yellow"
+            rating={feedback}
+            selectedStar={(rating) => setFeedback(rating)}
+              />
+               </Modal.Body>
+               <Modal.Footer>
+                     <Button onPress={handleRating}>Rate</Button>
+               </Modal.Footer>
+             </Modal.Content>
+           </Modal>     
+
+
+   <Modal isOpen={open} onClose={() => handleClose()}>
+        <Modal.Content maxWidth="400px">
+          <Modal.Header>Choose Image for verification</Modal.Header>
+          <Modal.Body>
+          <TouchableOpacity onPress={() => {
+              ImagePicker.launchImageLibrary(
+                  {
+                      mediaType: 'photo',
+                       includeBase64: true,
+                      maxHeight: 200,
+                      maxWidth: 200,
+                  },
+                  (response) => {
+                      setFile(response.assets[0].uri)
+                      setPhotoName(response.assets[0].fileName)
+                  },
+              )
+          }} >
+              <FeatherIcon style={styles.searchIcon} name='upload' size={20} color='#000' />
+          </TouchableOpacity>
+                        <View>
+                        <Text>{photoName}</Text>
+                        </View>
+          <Modal.Footer>
+                <Button onPress={handleCheckVerification}>Send</Button>
+          </Modal.Footer>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>       
+          <Center>
+          {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,width:250}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Login Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
+            <ScrollView>
+            { disable &&
+              shipmentData.map((v,i)=>{
+                if(v.type=='from'){
+                if(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up"){
+                    return(
+                      <View key={i}>
+                        <Button style={styles.pickup}
+                        onPress={()=>handlePickedUp(v.packageId)}
+                        >{`Pick Up ${v.count}`}</Button>
+                      </View>
+                    )
+                }else if(v.packageStatus =='picked_up'){
+                    return(
+                      <View key={i}>
+                        <Button style={styles.Verify}
+                        onPress={()=>handleVerify(v.packageId,v.shipmentId)}
+                        >{`Verify ${v.count}`}</Button>
+                        </View>
+                    )
+                }
+                }
+                else if(v.type=='to'){
+                    if(v.packageStatus=='delivery_in_progress'){
+                        return(
+                          <View key={i}>
+                        <Button style={styles.DropOff}
+                        onPress={()=>handleDropOff(v.shipmentId,v.accountId)}
+                        >{`Drop Off ${v.count}`}</Button>
+                        </View>
+                        )
+                    }
+                }
+                })}
+            </ScrollView>
+            </Center>
+            { shipmentData[0] &&
+      <RoutedMap from={from} shipmentData={shipmentData}/>
+            }
+
+        </View>
+    )
+}
+
+const styles=StyleSheet.create({
+
+pickup:{
+  width:100,
+  marginTop:10,
+  backgroundColor:'green'
+},
+Verify:{
+  width:100,
+  marginTop:10,
+  backgroundColor:'orange'
+},
+DropOff:{
+  width:100,
+  marginTop:10,
+  backgroundColor:'green'
+},
+container:{
+}
+})
+
+export default ActiveTimeline

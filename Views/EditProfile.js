@@ -3,8 +3,11 @@ import { Text,View,StyleSheet } from 'react-native'
 import { Input, Heading,Button,Select ,CheckIcon} from "native-base"
 import {Cities} from './../Components/Cities/Cities';
 import axios from 'axios'
-import { useSelector } from 'react-redux';
-import { exportDefaultSpecifier } from '@babel/types';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Root} from './../Config/root';
+import {useDispatch,useSelector} from 'react-redux';
+import {setUpdation} from './../Store/action';
+            
 
 const EditProfile = ({navigation}) => {
 
@@ -17,9 +20,14 @@ const EditProfile = ({navigation}) => {
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
     var user=useSelector(state=>state.user);
+    const userId = user?.account?._id
 
-    useEffect(async()=>{
-        var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:user.account._id})
+    useEffect(()=>{
+        fetching()
+    },[])
+
+    const fetching = async()=>{
+        var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:userId})
         if(data.status==200){
             setFirstName(data.message.firstName)
             setLastName(data.message.lastName)
@@ -27,28 +35,28 @@ const EditProfile = ({navigation}) => {
             setTown(data.message.town)
             setProvince(data.message.province)
         }
-return()=>{}
-    },[])
+    }
 
     const handleEditProfile=async()=>{
+      setErrorShow(false);
         try{
-
         setErrorShow(false)
         if(firstName ==='' || lastName==='' || street==='' || town==='' || city==='' || province===''){
             setError('Please fill all fields');
             setErrorShow(true)
         }else{
-
             var {data} = await axios.post(`${Root.production}/user/editProfile`,{
                 firstName,
                 lastName,
                 street,
                 town,
                 city,
-                province
+                province,
+                accountId:userId
             })
             if(data.status==200){
-                navigation.navigate('Dashboard');
+                console.log(data.message)
+                navigation.navigate('Profile');
             }
             else{
                 setError(data.message);

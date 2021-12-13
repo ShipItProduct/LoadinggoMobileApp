@@ -1,6 +1,7 @@
 const initialState = {
     role:'Shipper',
-    user:{}
+    user:{},
+    updation:0
 }
 
 
@@ -23,7 +24,12 @@ const initialState = {
             return{
                 ...state,
                 user:action.val
-            }    
+            };
+        case 'Updation':
+            return{
+                ...state,
+                updation:state.updation+1
+            }        
         default:
             return{
                 ...state

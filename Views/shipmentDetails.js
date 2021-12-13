@@ -1,11 +1,16 @@
 import React,{useEffect,useState} from 'react'
 import {ScrollView,StyleSheet,View} from 'react-native';
 import StatusBadge from '../Components/StatusBadges/StatusBadge'
-import { AlertDialog,Center,Heading,Text,Container,Button ,Stack,Modal,VStack,HStack,Image,Checkbox} from 'native-base';
+import { Alert,AlertDialog,Center,Heading,Text,Container,Button ,Stack,Modal,VStack,HStack,Image,Checkbox} from 'native-base';
 import StarRating from 'react-native-star-rating';
 import { Root } from '../Config/root';
 import axios from 'axios';
-// import { Button } from 'react-native-paper';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import TripRoutedMap from './../Components/MapsLocations/TripRouteMap'
+import moment from 'moment'
+import Complaint from './../Components/complaint/Complaint';
+import { useSelector,useDispatch } from 'react-redux';
+import { setUpdation } from '../Store/action';
 
 const shipmentDetails = ({route,navigation}) => {
 
@@ -22,16 +27,24 @@ const shipmentDetails = ({route,navigation}) => {
     const [showModal4, setShowModal4] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [rating, setRating] = useState(2.5)
-  
+    const updation = useSelector(state=>state.updation)
+    const dispatch = useDispatch();
+    
+    
+    useEffect(()=>{
+      dispatch(setUpdation())
+    },[])
+    
+    
     const onClose = () => setIsOpen(false)
 
-    useEffect(async()=>{
+    useEffect(()=>{
       fetching();
-    },[])
+    },[id,updation])
 
     const fetching=async()=>{
+      setErrorShow(false);
       try{
-          console.log('id==>',id)
       var {data} =  await axios.post(`${Root.production}/trip/viewShipmentOfferDetails`,{
           shipmentOfferId : id
       })
@@ -39,24 +52,43 @@ const shipmentDetails = ({route,navigation}) => {
           shipment=data.message
           setShipment(data.message)
           setLoading(false)
-          console.log('shipments==>',shipment)
-      }
+// date checking begin
+var get= data.message.shipmentOffer.createdAt;
+// var target = moment().format('LT');
+
+let target = moment(get).format()
+
+let newtarget = moment(target).add(15 , 'minutes').format();
+
+
+let flag = moment(new Date()).isBefore(newtarget)
+
+
+if( !flag   && data.message.shipmentOffer.status=='Pending'){
+  const response= await axios.post(`${Root.production}/trip/expireShipmentOffer` , {shipmentOfferId: id })
+  if(response.data.status==200){
+    // window.location.reload();
+    console.log("pending shipment has been expired");
+  }
+}
+// end 
+
+        }
       else{
           setError(data.message)
           setErrorShow(true)
-          console.log('error==>',data.message)
       }
   }
   catch(err){
   setError(err.message)
   setErrorShow(true)
-  console.log('error==>,',err.message)
   }
     }
 
-
     const handleTermsConditions = async() => {
+      setErrorShow(false);
         // api will be called
+        try{
         var {data} = await axios.post(`${Root.production}/trip/verifyShipment`,{
           shipmentOfferId:shipment.shipmentOffer._id
         })
@@ -64,12 +96,20 @@ const shipmentDetails = ({route,navigation}) => {
             setShowModal2(false);
             setShowModal(false);
             setAlertBody('Pickup confirmed');
+            dispatch(setUpdation())
             setIsOpen(true)
       }
+      else{
+        setErrorShow(true)
+        setError(data.message)}   } 
+        catch(err){
+          setErrorShow(true)
+          setError(err.message)}
       };
 
       const handleConfirmDropoff = async() => {
-
+        setErrorShow(false);
+        try{
         var {data} = await axios.post(`${Root.production}/trip/confirmDropOff`,{
           shipmentOfferId : shipment.shipmentOffer._id
         })
@@ -77,22 +117,38 @@ const shipmentDetails = ({route,navigation}) => {
           setShowModal3(false);
           setShowModal4(true)
           setAlertBody('Your shipment has been confirmed as delivered.')
+          dispatch(setUpdation())
           setIsOpen(true)
         }
+      else{
+        setErrorShow(true)
+        setError(data.message)}   } 
+        catch(err){
+          setErrorShow(true)
+          setError(err.message)}
       };
     
       const handleRating = async() => {
-
+        setErrorShow(false);
+        try{
         var {data} = await axios.post(`${Root.production}/trip/giveRating`,{
           rating:rating,
           accountId:shipment.shipmentOffer.carrierId
         })
         if(data.status==200){
           alert(feedback);
-          setAlertBody('Thanks for your feedback.')
+          setAlertBody('Thank you for your feedback.')
+          dispatch(setUpdation())
           setIsOpen(true)
           setShowModal4(false);
         }
+      else{
+        setErrorShow(true)
+        setError(data.message)}   } 
+        catch(err){
+          setErrorShow(true)
+          setError(err.message)}
+
       };
 
       const handleAlertClose = ()=>{
@@ -117,10 +173,20 @@ const shipmentDetails = ({route,navigation}) => {
           </AlertDialog.Body>
         </AlertDialog.Content>
       </AlertDialog>
-
+      {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Fetching Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }  
                   <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="lg">
                   <Modal.Content maxWidth="350">
-          <Modal.CloseButton />
           <Modal.Header>Confirm Pickup</Modal.Header>
           <Modal.Body>
             <VStack space={3}>
@@ -136,13 +202,10 @@ shipment!={} &&
       source={{
         uri: `${shipment?.shipmentOffer?.verificationImage}`,
       }}
-      alt="Alternate Text"
+      alt="There is no image till yet"
       size="xl"
       />
     }
-    {console.log(shipment?.shipmentOffer?.verificationImage)}
-                {/* <Text fontWeight="medium">Tax</Text> */}
-                {/* <Text color="blueGray.400">$38.84</Text> */}
               </HStack>
             </VStack>
           </Modal.Body>
@@ -161,7 +224,6 @@ shipment!={} &&
 
       <Modal isOpen={showModal2} onClose={() => setShowModal2(false)} size="lg">
         <Modal.Content maxWidth="350">
-          <Modal.CloseButton />
           <Modal.Body>
               <Heading size='md'>Terms {'&'} Conditions</Heading>
           <Text>
@@ -256,8 +318,7 @@ shipment!={} &&
 
       <Modal isOpen={showModal3} onClose={() => setShowModal(false)} size="lg">
                   <Modal.Content maxWidth="350">
-          <Modal.CloseButton />
-          <Modal.Header>Confirm Pickup</Modal.Header>
+          <Modal.Header>Confirm DropOff</Modal.Header>
           <Modal.Body>
               <Center>
                 <Text fontWeight="medium">Do you confirm delivery of your shipment ?</Text>
@@ -286,7 +347,6 @@ shipment!={} &&
 
       <Modal isOpen={showModal4} onClose={() => setShowModal(false)} size="lg">
                   <Modal.Content maxWidth="350">
-          <Modal.CloseButton />
           <Modal.Body>
               <Center>
                 <Text fontWeight="medium">Rate this Carrier</Text>
@@ -311,7 +371,15 @@ shipment!={} &&
 
             <View style={{flexDirection:'row',alignItems:'center',marginLeft:20,marginTop:10}} >
             <Text>Status: </Text><StatusBadge tag={shipment?.shipmentOffer?.status} />
-            <Button size="sm" colorScheme="danger" style={{position:'absolute',right:40}}>Complaint</Button>
+            { (shipment?.package?.packageStatus != 'Expired' && shipment?.package?.packageStatus != 'Pending') &&
+              <Complaint navigation={navigation}
+              shipmentId={shipment.shipmentOffer!=null && shipment.shipmentOffer._id}
+             carrierId={shipment.shipmentOffer!=null && shipment.shipmentOffer.carrierId} 
+             packageId={shipment.package!=null && shipment.package._id} 
+             chatRoomId={shipment.shipmentOffer!=null && shipment.shipmentOffer.chatRoomId} 
+             shipperId={shipment.shipmentOffer!=null && shipment.shipmentOffer.accountId}
+              />
+            }
             </View>
             <Stack
           mb="0"
@@ -326,7 +394,7 @@ shipment!={} &&
             md: "0",
           }}
         >
-        {(shipment?.shipmentOffer?.verified && shipment?.shipmentOffer?.status==='Active') && (
+        {(shipment?.shipmentOffer?.verified && shipment?.shipmentOffer?.status==='Active' &&  shipment?.package?.packageStatus==='dropped_off') && (
                 <Button size="sm" colorScheme="blue" onPress={()=>setShowModal3(true)}>Confirm DropOff</Button>
         )}
         {(!shipment?.shipmentOffer?.verified && shipment?.shipmentOffer?.status==='Active') && (
@@ -337,12 +405,16 @@ shipment!={} &&
                 <Button size="sm" style={shipment?.shipmentOffer?.status=='Waiting' ? {marginLeft:100} : {}}>Chat</Button>
         }
                 <Button size="sm"
-                style={(shipment?.shipmentOffer?.status!='Active' && shipment?.shipmentOffer?.status!='Waiting') ? {position:'absolute',right:20} : {}}
+                style={(shipment?.shipmentOffer?.status!='Active' && shipment?.shipmentOffer?.status!='Waiting') ? {position:'absolute',left:0} : {}
+              }
+              onPress={()=>navigation.navigate('Profile',{
+                id:shipment.shipmentOffer.carrierId
+            })}
                 >Carrier Profile</Button>
                 {/* <Button size="sm">asd</Button> */}
                 </Stack>
             <View style={styles.container}>
-            <Heading size="sm" style={styles.subheading}>
+            <Heading size="sm" style={styles.idHeading}>
                 Shipment Id # {shipment?.shipmentOffer?._id}
                 </Heading>
 
@@ -402,6 +474,15 @@ shipment!={} &&
                     </Text>
                 </Container>
             </View>
+            {(shipment?.shipmentOffer?.pickupLongitude) &&
+                    <TripRoutedMap
+                    departurelati={shipment?.shipmentOffer?.pickupLattitude}
+                    departurelongi={shipment?.shipmentOffer?.pickupLongitude}
+                    destinationlati={shipment?.shipmentOffer?.dropOffLattitude}
+                    destinationlongi={shipment?.shipmentOffer?.dropOffLongitude}
+                    />
+    }
+
         </ScrollView>
     )
 }
@@ -419,6 +500,9 @@ const styles = StyleSheet.create({
     },
     subheading:{
         marginTop:10
+    },
+    idHeading:{
+      marginTop:40
     },
     data:{
         marginTop:10,

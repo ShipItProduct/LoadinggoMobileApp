@@ -12,7 +12,6 @@ import EnterEmailForForgetPassword from './Views/EnterEmailForForgetPassword';
 import ResetPassword from './Views/ResetPassword';
 import {LogBox } from 'react-native';
 import {useSelector} from 'react-redux';
-LogBox.ignoreLogs(['Reanimated 2']);
 
 const Stack = createNativeStackNavigator();
 
@@ -23,22 +22,21 @@ const Navigation = () => {
   var [user,setUser] = useState({})
   useEffect(()=>{
       setUser(user1)
-      console.log('setUser==>',user)
   },[])
 
   return (
     <NavigationContainer> 
     <PaperProvider theme={theme} >  
     <Stack.Navigator screenOptions={{headerShown:false}} 
-    initialRouteName={'dashboard-app'} 
+    // initialRouteName={'Login'} 
     >
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name='ResetPassword' component={ResetPassword} />
         <Stack.Screen name="EnterEmailForForgetPassword" component={EnterEmailForForgetPassword} />
         <Stack.Screen name="BuildProfile" component={BuildProfile} />
-        <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />
         <Stack.Screen name="dashboard-app" component={Dashboard} />
-        <Stack.Screen name='ResetPassword' component={ResetPassword} />
       </Stack.Navigator>
   </PaperProvider>
     </NavigationContainer>

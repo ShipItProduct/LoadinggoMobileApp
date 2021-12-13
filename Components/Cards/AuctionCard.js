@@ -4,7 +4,7 @@ import { Title } from 'react-native-paper'
 import StatusBadge from '../StatusBadges/StatusBadge'
 import { Link } from '@react-navigation/native';
 
-const AuctionCard = ({data}) => {
+const AuctionCard = ({data,route}) => {
     return (
         <Pressable>
             <View style={styles.auctionCard} >
@@ -14,7 +14,7 @@ const AuctionCard = ({data}) => {
                 <View style={{flexDirection:'row',alignItems:'center'}} >
             <Text>Status: </Text><StatusBadge tag={data.status}/>
             </View>
-                <Link to={{ screen: 'AuctionDetails', params: { id: data._id } }}>
+                <Link to={{ screen: `${route}`, params: { id: data._id } }}>
                 View Details &gt;&gt;
                 </Link>
             </View>
