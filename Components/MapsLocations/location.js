@@ -8,6 +8,7 @@ const Location = ({handleLocations,handle}) => {
     const [latitude,setLatitude] = useState(0)
     const [msg,setMsg] = useState('')
     
+    
     GetLocation.getCurrentPosition({
         enableHighAccuracy: true,
         timeout: 15000,

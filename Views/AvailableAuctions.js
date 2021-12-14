@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react'
-import {ScrollView,StyleSheet,View} from 'react-native';
+import {ScrollView,StyleSheet,View,Alert} from 'react-native';
 import AuctionCard from '../Components/Cards/AuctionCard';
 import axios from 'axios';
 import { Cities } from '../Components/Cities/Cities';
@@ -9,10 +9,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Text,Heading} from 'native-base'
 import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
+import {io} from "socket.io-client";
+import GetLocation from 'react-native-get-location'
 
 
 const AvailableAuctions = () => {
 
+    const socket = io('https://stg-dakiyah.herokuapp.com');
     const [showFilter,setShowFilter] = useState(false);
     const [from,setFrom] = useState('');
     const [to,setTo] = useState('');
@@ -21,12 +24,46 @@ const AvailableAuctions = () => {
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
     const user = useSelector(state=>state.user);
+    var [departureLattitude, setDepartureLatitude] = useState(0);
+    var [departureLongitude, setDepartureLongitude] = useState(0);
     const updation = useSelector(state=>state.updation)
     const dispatch = useDispatch();
-    
+    const [cond,setCond] = useState(false);
     
     useEffect(()=>{
+      socket.on('FetchAuctions',(data)=>{
+      allAuctions=data
+      setAllAuctions(data);
+      handleDataFilter('All')
+      })
       dispatch(setUpdation())
+
+      // getting location
+      setInterval(()=>{
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+      })
+      .then(location => {
+        departureLattitude=location.latitude;
+        departureLongitude=location.longitude;
+        setDepartureLatitude(departureLattitude);
+        setDepartureLongitude(departureLongitude);
+        setCond(true)
+        console.log(departureLattitude,departureLongitude)
+      // Alert.alert('We get your current location.')
+      })
+      .catch(error => {
+          const { code, message } = error;
+          // console.warn(code, message);
+          if(message=="Location not available"){
+              Alert.alert('Please open your mobile location and try again.')
+              setCond(false)
+              // setMsg()
+          }
+  
+      })
+      },10000)
     },[])
     
     useEffect(()=>{
@@ -60,9 +97,7 @@ const AvailableAuctions = () => {
       auctions = [];
       auctions.push(
         allAuctions.filter((val) => {
-          var check = (val.status=='Open')
-        // var check=true
-        //   var check = (val.status == 'Open' && val.accountId != user.account._id);
+          var check = (val.status == 'Open' && val.accountId != user.account._id);
           if (check) {
             return val;
           }
@@ -91,7 +126,7 @@ const AvailableAuctions = () => {
     
         }   
     
-        const filterData = () => {
+    const filterData = () => {
             auctions = [];
             if (from !== "" && to === "") {
               // PUSH METHOD FOR FILTER FROM
@@ -155,6 +190,9 @@ const AvailableAuctions = () => {
     }
     
     return (
+      <>
+      {cond &&
+      
         <View>
             <Text style={styles.heading}>Available Auctions</Text>
             <Flex ml={250} mr={10}>
@@ -243,14 +281,25 @@ const AvailableAuctions = () => {
               </View>
             }
       <ScrollView style={{marginBottom:170}}>
-      {auctions.map((val,i) => (
+      {auctions.map((val,i) => 
+      { 
+        if((Math.abs(parseFloat(val.pickupLattitude)-parseFloat(departureLattitude))<0.018) && 
+        (Math.abs(parseFloat(val.pickupLongitude)-parseFloat(departureLongitude))<0.018) )
+        {
+          console.log(i)
+        return(
             <View key={i}>
               <AuctionCard route="CarrierAuctionDetails" data={val}/>
             </View>
             )
+        }
+        }
         )}
         </ScrollView>
         </View>
+        }
+        </>
+
     )
 }
 
@@ -276,6 +325,5 @@ const styles = StyleSheet.create({
         marginBottom:20
     }
 })
-
 
 export default AvailableAuctions

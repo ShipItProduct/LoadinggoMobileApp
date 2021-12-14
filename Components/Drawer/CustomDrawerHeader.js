@@ -48,12 +48,9 @@ const CustomDrawerHeader = ({ navigation }) => {
         dispatch(setUserData({}))
         dispatch(setUserType('Shipper'))
           const isSignedIn = await GoogleSignin.isSignedIn();
-          console.warn('wadasda=>',isSignedIn)
           if(isSignedIn){
-            console.log('google se signed hai')
             try{
               await GoogleSignin.signOut();
-              console.log("ho gya logout")
             }catch(err){
               console.log(err.message,'===< signout error')
             }

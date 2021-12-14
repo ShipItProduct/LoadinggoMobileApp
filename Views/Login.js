@@ -13,8 +13,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const Login = ({navigation}) => {
 
     const dispatch =useDispatch();
-    let [email , setEmail] = useState('')
-    let [password , setPassword] = useState('')
+    let [email , setEmail] = useState('bot2@gmail.com')
+    let [password , setPassword] = useState('shipitbot2')
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
     const [disabled , setDisabled] = useState(false)
@@ -160,16 +160,17 @@ const Login = ({navigation}) => {
   onPress={()=>signIn()}
 //   disabled={this.state.isSigninInProgress}
 />   
+
 <LoginButton
             style={{width:250,height:35,backgroundColor:"blue"}}
               onLoginFinished={
                 (error, result) => {
                   console.log('start')
-    
+                  console.log(JSON.stringify(AccessToken.getCurrentAccessToken()))
                   if (error) {
                     console.log("login has error: " + result.error);
                   } else if (result.isCancelled) {
-                    console.log("login is cancelled.");
+                    console.log("login is cancelled." + JSON.stringify(result));
                   } else {
                     AccessToken.getCurrentAccessToken().then(
                       (data) => {
