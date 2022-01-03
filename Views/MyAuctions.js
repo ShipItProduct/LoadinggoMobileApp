@@ -65,6 +65,10 @@ catch(err){
                 </Text>
               </View>
             }
+            {
+              auctions.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no auction.</Text>
+            }
       <ScrollView>
           {auctions &&
           auctions.reverse().map((v,i)=>{

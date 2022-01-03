@@ -44,6 +44,8 @@ const fetching=async()=>{
       if(data.status==200){
         myAllOffers=data.message
         setMyAllOffers(myAllOffers);
+        shipments=myAllOffers;
+        setShipments(shipments)
       }else{
   setError(data.message)
   setErrorShow(true)}
@@ -54,6 +56,8 @@ const fetching=async()=>{
             if(data.message.status=='Pending'){
               myAllOffers=[...myAllOffers,data.message];
               setMyAllOffers(myAllOffers);
+              shipments=myAllOffers;
+              setShipments(shipments)
                       }
                       handleDataFilter('All')
           }else{
@@ -90,8 +94,6 @@ const handleDataFilter = (type)=>{
   );
   shipments = shipments[0];
   setShipments(shipments);
-  
-  
   }
   // end of all checking
   else{
@@ -173,7 +175,7 @@ const handleChange=(city,type)=>{
         <View>
             <Text style={styles.heading}>My Offers</Text>
                 <Flex ml={250} mr={10}>
-            <Button onPressIn={toggleFilter}>
+            <Button onPressIn={toggleFilter} size={'sm'}>
                 Filter                
             </Button>
             </Flex>
@@ -255,13 +257,16 @@ const handleChange=(city,type)=>{
         md: 0,
       }}
     >
-      <Button onPress={()=>handleDataFilter('All')} size="xs" style={styles.button1}>All</Button>
-      <Button onPress={()=>handleDataFilter('Active')} size="xs" style={styles.button}>Active</Button>
-      <Button onPress={()=>handleDataFilter('Completed')} size="xs" style={styles.button}>Completed</Button>
-      <Button onPress={()=>handleDataFilter('Waiting')} size="xs" style={styles.button}>Waiting</Button>
+      <Button onPress={()=>handleDataFilter('All')} size="sm" style={styles.button1}>All</Button>
+      <Button onPress={()=>handleDataFilter('Active')} size="sm" style={styles.button}>Active</Button>
+      <Button onPress={()=>handleDataFilter('Completed')} size="sm" style={styles.button}>Completed</Button>
+      <Button onPress={()=>handleDataFilter('Waiting')} size="sm" style={styles.button}>Waiting</Button>
     </Button.Group>
             }
-
+{
+              shipments.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no offer.</Text>
+            }
       <ScrollView style={{marginBottom:170}}>
           {
             shipments &&
@@ -289,7 +294,7 @@ const styles = StyleSheet.create({
         height:40,
     },
     button:{
-        width:70,
+        width:90,
         height:40,
         marginLeft:-12
     },

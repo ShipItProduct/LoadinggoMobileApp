@@ -58,6 +58,10 @@ const AvailableTrips = () => {
                 </Text>
               </View>
             }
+            {
+              allTrips.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no trips.</Text>
+            }
       <ScrollView>
           {allTrips &&
           allTrips.reverse().map((v,i)=>{

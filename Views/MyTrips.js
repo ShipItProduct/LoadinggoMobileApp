@@ -92,7 +92,7 @@ const fetching=async()=>{
             <Text style={styles.heading}>My Trips</Text>
 
             <Flex ml={220} mr={10}>
-            <Button colorScheme="blue" onPress={()=>setShowModal(true)}>
+            <Button colorScheme="blue" onPress={()=>setShowModal(true)} size={'sm'}>
                 Add New                
             </Button>
             </Flex>
@@ -116,10 +116,10 @@ const fetching=async()=>{
         md: 0,
       }}
     >
-      <Button onPress={()=>handleDataFilter('All')} size="xs" style={styles.button1}>All</Button>
-      <Button onPress={()=>handleDataFilter('Open')} size="xs" style={styles.button}>Open</Button>
-      <Button onPress={()=>handleDataFilter('Close')} size="xs" style={styles.button}>Closed</Button>
-      <Button onPress={()=>handleDataFilter('Cancel')} size="xs" style={styles.button}>Cancelled</Button>
+      <Button onPress={()=>handleDataFilter('All')} size="sm" style={styles.button1}>All</Button>
+      <Button onPress={()=>handleDataFilter('Open')} size="sm" style={styles.button}>Open</Button>
+      <Button onPress={()=>handleDataFilter('Close')} size="sm" style={styles.button}>Closed</Button>
+      <Button onPress={()=>handleDataFilter('Cancel')} size="sm" style={styles.button}>Cancelled</Button>
     </Button.Group>
     {
               errorShow &&
@@ -132,6 +132,10 @@ const fetching=async()=>{
                     {error}
                 </Text>
               </View>
+            }
+            {
+              display.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no trip.</Text>
             }
       <ScrollView style={{marginBottom:170}}>
           {
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
         height:40,
     },
     button:{
-        width:70,
+        width:90,
         height:40,
         marginLeft:-12
     },

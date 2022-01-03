@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {  StyleSheet, View, TouchableOpacity } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
-import { Headline, TextInput, Button, Checkbox } from 'react-native-paper'
+import { Headline, TextInput, Button, Checkbox ,ActivityIndicator,Colors} from 'react-native-paper'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FeatherIcon from 'react-native-vector-icons/dist/Feather'
 import PhoneInput from "react-native-phone-number-input";
@@ -9,21 +9,27 @@ import * as ImagePicker from 'react-native-image-picker'
 import {Root} from '../Config/root'
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Text,Heading} from 'native-base'
+import {Provinces,Cities} from './../Components/Cities/Cities';
 import storage from '@react-native-firebase/storage';
+import moment from 'moment';
+import {Text, Input,Image ,Modal,VStack,HStack,Center,Select,CheckIcon,Heading} from 'native-base'
 
 
 const BuildProfile = ({route,navigation}) => {
 
 
     var {id} = route.params;
+    console.log(id)
     let [firstName, setFirstName] = useState('')
     let [lastName, setLastName] = useState('')
     let [gender, setGender] = React.useState("Male");
     let [dateOfBirth, setdateOfBirth] = useState('')
+    let [dateOfBirthFormt, setdateOfBirthFormat] = useState('')
     let [town, setTown] = useState('')
     let [street, setStreet] = useState('')
     let [city, setCity] = useState('')
+    const [check,setCheck] = useState(false)
+    const [showModal, setShowModal] = useState(false)
     let [province, setProvince] = useState('')
     let [phone, setPhone] = useState('')
     let [cnic, setCNIC] = useState('')
@@ -31,6 +37,9 @@ const BuildProfile = ({route,navigation}) => {
     let [photoName, setPhotoName] = useState('')
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
+    const [disabled , setDisabled] = useState(false)
+    const [disp , setDisp] = useState(false)
+    const [uri,setUri] = useState('');
 
     let [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -52,70 +61,141 @@ const BuildProfile = ({route,navigation}) => {
     };
 
     const handleConfirm = (date) => {
-        setdateOfBirth(date)
+        // date=date+""
+        // setdateOfBirthFormat(date)
+        var a=date+"";
+        a=a.split(' ');
+        setdateOfBirth(a[2]+'/'+a[1]+'/'+a[3])
+        setdateOfBirthFormat(moment(date).format('YYYY MM DD'))
         hideDatePicker();
     };
 
     const handleProfileSubmit =async () => {
         setErrorShow(false);
+        setDisabled(true)
+        var newone = moment().subtract(18,'years').format('YYYY MM DD');
         try{
-
-        if(photo===null){
+        if(photo===''){
         setErrorShow(true);
         setError('please select profile Picture first')
         }else if(firstName==='' || lastName==='' || gender==='' || dateOfBirth==='' || town==='' || 
         street==='' || city==='' || province==='' || phone==='' || cnic===''){
             setErrorShow(true);
             setError('please fill form completely')
-            }else{
-                try{
-                await storage().ref(`/avatars/${cnic}`).putFile(photo);
-                  await  storage().ref('/avatars').child(cnic)
-                .getDownloadURL().then(async (uri)=>{
-            var val={
-                firstName,
-                lastName,
-                gender,
-                dateOfBirth,
-                town,
-                street,
-                city,
-                province,
-                phone,
-                cnic,
-                userId:id,
-                profilePic:uri
-
-            };
-            var {data} = await axios.post(`${Root.production}/user/buildIndividualAccount`,val)
-            if(data.status==200){
-                navigation.navigate('EmailVerification',{id:id})
-            }else{
-                setErrorShow(true);
-                setError(data.message)        
             }
-        })
-    }catch(err){
-        setErrorShow(true);
-        setError(err.message)
-    }
-    }
+            else if(phone.length!=10 ){
+                setErrorShow(true);
+                setError('Your phone number should have 10 digits.')    
+            }
+            else if(cnic.length!=13 || isNaN(Number(cnic))){
+                setErrorShow(true);
+                setError('Your CNIC should have 13 digits.')    
+            }
+            else if(newone<dateOfBirthFormt){
+                setErrorShow(true);
+                setError('Your age should be 18 or greater.')    
+            }
+            else{
+                setShowModal(true)
+            }
     }
     catch(err){
         setErrorShow(true);
-        setError(err.message)        
+        setError(err.message)    
     }
 
         // navigation.navigate('dashboard-app')
+        setDisabled(false)
+
     }
 
+    const handleTermsConditions = async()=>{
+        try{
+
+        var val={
+            firstName,
+            lastName,
+            gender,
+            dateOfBirth,
+            town,
+            street,
+            city,
+            province,
+            phoneNumber:phone,
+            cnic,
+            userId:id,
+            profilePic:uri,
+            
+        };
+        var {data} = await axios.post(`${Root.production}/user/buildIndiviualAccount`,val)
+        if(data.status==200){
+            navigation.navigate('EmailVerification',{id:id})
+        }else{
+            setErrorShow(true);
+            setError(data.message)
+        }
+}catch(err){
+    setErrorShow(true);
+    setError(err.message)
+    console.log('error in catch==>',err.message)
+}
+
+    }
+
+    const handleImageProcess=async(imageUrl)=>{
+          setDisp(false)
+          setErrorShow(false);
+        try{
+            console.log('MY ID==>','Minhaj')
+        await storage().ref(`/avatars/${id}`).putFile(imageUrl);
+        await  storage().ref('/avatars').child(id)
+      .getDownloadURL().then(async (imageuri)=>{
+          setUri(imageuri)
+          setDisp(true)
+        //   console.log('MY IMAGE==>',imageuri)
+
+    })
+}
+catch(err){
+    setErrorShow(true);
+    setError(err.message)
+}
+    }
 
     return (
+        <>
+            {/* terms and conditions modal */}
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="lg">
+        <Modal.Content maxWidth="350">
+          <Modal.Body>
+              <Heading size='md'>Terms {'&'} Conditions</Heading>
+
+          <HStack style={{marginTop:20}}>
+        <Checkbox  value="red" colorScheme="red" size="sm" defaultIsChecked>
+          UX Research
+        </Checkbox>
+            <Text> I accept all these terms and conditions</Text>
+          </HStack>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+            disabled={!check}
+            colorScheme="success"
+            //   flex="1"
+              onPress={handleTermsConditions}
+            >
+              Continue
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
         <ScrollView>
+
+        {/* page coding */}
             <View
                 style={styles.buildProfilePage}
             >
-                <Headline>Create A Profile</Headline>
+                <Headline>Create your Profile</Headline>
                 <Text>Make sure it's catchy</Text>
                 <View style={styles.inputSection} >
                     <View
@@ -157,8 +237,49 @@ const BuildProfile = ({route,navigation}) => {
                     </View>
                     <TextInput label='Town' style={styles.fullInput} mode='outlined' value={town} onChangeText={(text) => setTown(text)} />
                     <TextInput label='Street' style={styles.fullInput} mode='outlined' value={street} onChangeText={(text) => setStreet(text)} />
-                    <TextInput label='City' style={styles.fullInput} mode='outlined' value={city} onChangeText={(text) => setCity(text)} />
-                    <TextInput label='Province' style={styles.fullInput} mode='outlined' value={province} onChangeText={(text) => setProvince(text)} />
+                    <View style={styles.selectInput}>
+                    <Select
+              selectedValue={city}
+          accessibilityLabel="City"
+          variant='unstyled'
+          placeholder="City"
+          _selectedItem={{
+            bg: "teal.600",
+            endIcon: <CheckIcon size="5" />,
+          }}
+          mt={1}
+          onValueChange={(itemValue) => setCity(itemValue)}
+        >
+            {
+                Cities.map((v,i)=>(
+                    <Select.Item key={i}  label={v} value={v} />
+                ))
+            }
+        </Select>
+        </View>
+
+                    {/* <TextInput label='Province' style={styles.fullInput} mode='outlined' value={province} onChangeText={(text) => setProvince(text)} /> */}
+                    <View style={styles.selectInput}>
+                    <Select
+              selectedValue={province}
+          accessibilityLabel="Province"
+          variant='unstyled'
+          placeholder="Province"
+          _selectedItem={{
+            bg: "teal.600",
+            endIcon: <CheckIcon size="5" />,
+          }}
+          mt={1}
+          onValueChange={(itemValue) => setProvince(itemValue)}
+        >
+            {
+                Provinces.map((v,i)=>(
+                    <Select.Item key={i}  label={v} value={v} />
+                ))
+            }
+        </Select>
+        </View>
+
                     <View style={{
                         borderWidth: 1,
                         borderRadius: 2,
@@ -172,6 +293,8 @@ const BuildProfile = ({route,navigation}) => {
                             defaultValue={phone}
                             defaultCode="PK"
                             textInputStyle={{color:'black'}}
+                            disableArrowIcon
+                            flagButtonStyle={{width:50,marginRight:-5}}
                             onChangeText={(text) => {
                                 setPhone(text);
                             }}
@@ -192,6 +315,7 @@ const BuildProfile = ({route,navigation}) => {
                                 (response) => {
                                     setPhoto(response.assets[0].uri)
                                     setPhotoName(response.assets[0].fileName)
+                                    handleImageProcess(response.assets[0].uri)
                                 },
                             )
                         }} >
@@ -199,27 +323,42 @@ const BuildProfile = ({route,navigation}) => {
                         </TouchableOpacity>
                        
                         </View>
+                        { disp &&
+                        <View style={{alignItems:'center'}}>
+                        <Image 
+                        size={'lg'}
+                        alt='selected image'
+                        source={uri!='' ? {uri:uri} : {uri:''}}
+                        />
+                        </View>
+}
+                        {/* <Text>{uri === '' ? '' : photoName}</Text> */}
                         <View>
-                        <Text>{photo === '' ? '' : photoName}</Text>
                         </View>
                     </View>
+                        <View style={{marginLeft:10,marginTop:10,marginBottom:10}}>
+                            <Text style={{color:'red'}}>ALL FIELDS ARE MANDATORY</Text>
+                        </View>
                     {
               errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
-                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
-                    <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Profile Error
-                </Heading>
-                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
-                    {error}
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'70%'}}>
+                {/* <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>                    
+                </Heading> */}
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:0}}>
+                    {/* <MaterialIcons name="error" size={20} color="#F0625F"/> */}
+                 Error: {error}
                 </Text>
               </View>
             }
+                    {
+                disabled ? (<ActivityIndicator animating={true} color={Colors.black} />) : (
                     <Button mode='contained' style={styles.submitBtn} onPress={handleProfileSubmit} >Submit</Button>
-
+                  )
+            }
                 </View>
             </View>
         </ScrollView>
+        </>
     )
 }
 
@@ -259,7 +398,15 @@ const styles = StyleSheet.create({
     },
     fullInput: {
         width: 310,
-        margin: 5
+        margin: 5,
+    },
+    selectInput:{
+        width: 310,
+        margin: 5,
+        backgroundColor: '#F8F9FB',
+        borderWidth: 1,
+        borderRadius: 2,
+        padding: 5,
     },
     halfInput: {
         width: 150,

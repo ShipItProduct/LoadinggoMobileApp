@@ -50,20 +50,20 @@ const AvailableAuctions = () => {
         setDepartureLatitude(departureLattitude);
         setDepartureLongitude(departureLongitude);
         setCond(true)
-        console.log(departureLattitude,departureLongitude)
+        // console.log(departureLattitude,departureLongitude)
       // Alert.alert('We get your current location.')
       })
       .catch(error => {
           const { code, message } = error;
           // console.warn(code, message);
           if(message=="Location not available"){
-              Alert.alert('Please open your mobile location and try again.')
+              // Alert.alert('Please open your mobile location and try again.')
               setCond(false)
               // setMsg()
           }
   
       })
-      },10000)
+      },13000)
     },[])
     
     useEffect(()=>{
@@ -80,6 +80,16 @@ const AvailableAuctions = () => {
           auctions=data.message.auctions
             setAllAuctions(data.message.auctions);
             setAuctions(data.message.auctions)
+            auctions = [];
+            auctions.push(
+              allAuctions.filter((val) => {
+                var check = (val.status == 'Open' && val.accountId != user.account._id);
+                if (check) {
+                  return val;
+                }
+              })
+            );
+            setAuctions(auctions[0]);
         }else{
       setErrorShow(false)
       setError(data.message)
@@ -91,6 +101,7 @@ const AvailableAuctions = () => {
 
     }
     }
+
     const handleDataFilter = async(val)=>{
         if(val=='All'){
       // // start of all checking
@@ -191,12 +202,18 @@ const AvailableAuctions = () => {
     
     return (
       <>
+      {cond===false &&
+      <>
+      <Text style={{display:'flex',fontSize:20,marginTop:20,textAlign:'center'}}>Loading...</Text>
+        <Text style={{display:'flex',color:'red',fontSize:15,marginTop:20,textAlign:'center'}}>Please open your mobile location and try again</Text>
+        </>
+      }
       {cond &&
       
         <View>
             <Text style={styles.heading}>Available Auctions</Text>
             <Flex ml={250} mr={10}>
-            <Button onPressIn={toggleFilter}>
+            <Button onPressIn={toggleFilter} size={'sm'}>
                 Filter                
             </Button>
             </Flex>
@@ -280,13 +297,16 @@ const AvailableAuctions = () => {
                 </Text>
               </View>
             }
+            {
+              auctions.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no available auction.</Text>
+            }
       <ScrollView style={{marginBottom:170}}>
       {auctions.map((val,i) => 
       { 
         if((Math.abs(parseFloat(val.pickupLattitude)-parseFloat(departureLattitude))<0.018) && 
         (Math.abs(parseFloat(val.pickupLongitude)-parseFloat(departureLongitude))<0.018) )
         {
-          console.log(i)
         return(
             <View key={i}>
               <AuctionCard route="CarrierAuctionDetails" data={val}/>

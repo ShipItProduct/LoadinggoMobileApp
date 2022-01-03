@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">loadinggo</string>
+    <string name="app_name">Dakiyah</string>
     <string name="facebook_app_id">1083641122381023</string>
     <string name="fb_login_protocol_scheme">fb1083641122381023</string>
-    <string name="facebook_client_token">fb1083641122381023</string>
-    <!-- <string name="server_client_id">1080341009220-30hcj3gumf9fn393n2o4sgo84bselgtf.apps.googleusercontent.com</string> -->
+    <string name="facebook_client_token">ba28df1b6a5f59e3c139ea99306f4859</string>
+    <string name="server_client_id">1080341009220-30hcj3gumf9fn393n2o4sgo84bselgtf.apps.googleusercontent.com</string>
 </resources>

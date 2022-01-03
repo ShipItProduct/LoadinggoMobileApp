@@ -20,20 +20,24 @@ const Login = ({navigation}) => {
     const [disabled , setDisabled] = useState(false)
 
     GoogleSignin.configure({
-        webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-        // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
+      webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      // webClientId: '1080341009220-c07eicflj0i50hspov11nu00cprbu6pr.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess:true
+      // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
         // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
     });
 
       const signIn = async () => {
         setErrorShow(false);
+        setDisabled(true)
         try {
-          await GoogleSignin.hasPlayServices();
+          const a=await GoogleSignin.hasPlayServices();
+          // console.log('ues==>',a)
           const userInfo = await GoogleSignin.signIn();
         //   setState({ userInfo });
-        console.log('as==>>',userInfo.user.name)
-        console.log('as==>>',userInfo.user.email)
-        console.log('as==>>',userInfo.user.id)
+        // console.log('as==>>',userInfo.user.name)
+        // console.log('as==>>',userInfo.user.email)
+        // console.log('as==>>',userInfo.user.id)
         const {data} = await axios.post(`${Root.production}/user/login` , {email: userInfo.user.email , password:userInfo.user.id})
         if(data.status==200){
           if (data.message.account.verified == true) {
@@ -72,6 +76,7 @@ const Login = ({navigation}) => {
             // some other error happened
           }
         }
+      setDisabled(false)
       };
 
     const handleLogin = async () =>{
@@ -93,8 +98,9 @@ const Login = ({navigation}) => {
                 });
               }
             } else if (data.status == 403) {
+              // console.log(data.userId)
               navigation.navigate('BuildProfile',{
-                id:data.message.userId
+                id:data.userId
               })
             } else{
               setError(data.message)
@@ -160,8 +166,8 @@ const Login = ({navigation}) => {
   onPress={()=>signIn()}
 //   disabled={this.state.isSigninInProgress}
 />   
-
 <LoginButton
+                    // publishPermissions={['publish_actions']}
             style={{width:250,height:35,backgroundColor:"blue"}}
               onLoginFinished={
                 (error, result) => {

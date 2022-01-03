@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { Linking, StyleSheet, Text, View } from 'react-native'
-import { Button, Headline , TextInput} from 'react-native-paper'
+import { Button, Headline , TextInput,ActivityIndicator,Colors} from 'react-native-paper'
 import {GoogleSignin,GoogleSigninButton,statusCodes} from '@react-native-google-signin/google-signin';
 import {LoginButton, AccessToken } from 'react-native-fbsdk';
 import {Root} from '../Config/root'
-import {Heading} from 'native-base';
+import {Heading,Button as Btn,Image} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
 
 const Register = ({navigation}) => {
@@ -22,14 +23,22 @@ const Register = ({navigation}) => {
       setDisabled(true)
       setErrorShow(false);
         try {
-          if(username==='' || email=== '' || password ===''){
+          var divider1 = email.split("@");
+          console.log(divider1[1].split('.')[1])
+              if(username==='' || email=== '' || password ===''){
               setErrorShow(true);
               setError('Please fill form completely.')
           }
-          else if(password !==confirmPassword){
+          else if(divider1[0].length<1 || divider1[1]=='' || divider1[1].split('.')[0]=='' || divider1[1].split('.')[1]=='' || divider1[1].split('.')[0]==undefined || divider1[1].split('.')[1]==undefined){
+            setErrorShow(true);
+            setError('Please correct your email format.')
+        }else if(password.length <8){
               setErrorShow(true);
-              setError('Your Password & Confirm Password should be same.')
-          }else{
+              setError('Your Password should have atleast 8 characters.')
+          }else if(password !==confirmPassword){
+            setErrorShow(true);
+            setError('Your Password & Confirm Password should be same.')
+        }else{
             let {data} = await axios.post(`${Root.production}/user/register` , {email , password,username})
             if(data.status==200){
               navigation.navigate('BuildProfile',{id:data.message.id})
@@ -44,15 +53,16 @@ const Register = ({navigation}) => {
           } 
         }
         catch (error) {
-          setError(error.message)
           setErrorShow(true);
-        }
+          setError('Please fill form correctly.')
+          }
 
       setDisabled(false)
     }
 
     GoogleSignin.configure({
       webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess:true
       // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
       // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
   });
@@ -116,7 +126,11 @@ const Register = ({navigation}) => {
                 <TextInput label='Email' mode='outlined' style={styles.input} value={email} onChangeText={(text) => setEmail(text) } left={<TextInput.Icon name='email-outline' />} />
                 <TextInput label='Password' mode='outlined' style={styles.input} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} left={<TextInput.Icon name='lock-outline' />} />
                 <TextInput label='Re-enter Password' mode='outlined' style={styles.input} secureTextEntry value={confirmPassword} onChangeText={(text) => setConfirmPassword(text)} left={<TextInput.Icon name='lock-outline' />} />
-                <Button mode='contained' onPress={handleSignUp} style={styles.loginBtn} >Sign Up</Button>
+                {
+                disabled ? (<ActivityIndicator animating={true} color={Colors.black} />) : (
+                  <Button mode='contained' onPress={handleSignUp} style={styles.loginBtn} >Sign Up</Button>
+                  )
+            }
             </View>
             
             <View style={styles.orSection} >
@@ -125,16 +139,21 @@ const Register = ({navigation}) => {
                 <View style={styles.hr} ></View>
             </View>
             <View style={styles.socialBtns} >
-            <GoogleSigninButton
+            {/* <GoogleSigninButton
   style={{ width: 250, height: 48 }}
   size={GoogleSigninButton.Size.Wide}
   color={GoogleSigninButton.Color.Light}
   onPress={()=>signUpWithGoogle()}
   //   disabled={this.state.isSigninInProgress}
-/>   
+/>  */}
+<Btn onPress={()=>signUpWithGoogle()} leftIcon={<AntDesign name='google' size={20} style={{marginLeft:-25}} />} style={{backgroundColor:'#fff'}}   shadow={3}>
+  <Text style={{color:'gray',fontWeight:'bold',alignContent:'flex-end',marginLeft:30}}>Sign up with Google</Text>
+  </Btn>  
+  <View style={{height:5}}></View>
 <LoginButton
             style={{width:250,height:35,backgroundColor:"blue"}}
-              onLoginFinished={
+            readPermissions={["user_friends", "email"]}
+            onLoginFinished={
                 (error, result) => {
                   console.log('start')
     

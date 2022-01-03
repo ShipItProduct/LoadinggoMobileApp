@@ -25,9 +25,44 @@ const CustomDrawer = ({navigation}) => {
             {
                 currentRole === "Shipper" ? (
                     <View style={{ width: '100%' }} >
-                    <TouchableOpacity style={styles.dashboardItemOdd} >
+                        <TouchableOpacity style={styles.dashboardItemEven} >
+                            <View >
+                                <Title style={{ color: 'white',fontSize:16 }} onPress={()=>navigation.navigate('Dashboard',{id:userId})}>
+                <MaterialIcons name='dashboard' size={20} color='white' />
+                                    {" "}Dashboard</Title>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.dashboardItemOdd} >
+                            <View  >
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('AvailableTrips',{id:userId})}>
+                                <MaterialIcons name='home' size={20} color='white' />
+                                    {" "}Available dakiyah</Title>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.dashboardItemEven} >
+                            <View  >
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('CreateAuction',{id:userId})}>
+                                <MaterialIcons name='add' size={20} color='white' />
+                                    {" "}Create Auction</Title>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.dashboardItemOdd} >
+                            <View  >
+                                <Title style={{ color: 'white' ,fontSize:16 }} onPress={()=>navigation.navigate('MyAuctions',{id:userId})}>
+                                <MaterialIcons name='list-alt' size={20} color='white' />
+                                    {" "}My Auction</Title>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.dashboardItemEven} >
+                            <View  >
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('my-shipments',{id:userId})}>
+                                <MaterialCommunityIcons name='truck-delivery' size={20} color='white' />
+                                    {" "}My Shipments</Title>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.dashboardItemOdd} >
                         <View  >
-                            <Title style={{ color: 'white',fontSize:18  }}
+                            <Title style={{ color: 'white',fontSize:16  }}
                             onPress={()=>navigation.navigate('Profile',{
                                 // id:user.account._id
                                 id:userId
@@ -36,62 +71,27 @@ const CustomDrawer = ({navigation}) => {
                             <FontAwesome name='user' size={20} color='white' />
                                 {" "}My Profile</Title>
                         </View>
-                    </TouchableOpacity>
-                        <TouchableOpacity style={styles.dashboardItemEven} >
-                            <View >
-                                <Title style={{ color: 'white',fontSize:18 }} onPress={()=>navigation.navigate('Dashboard',{id:userId})}>
-                <MaterialIcons name='dashboard' size={20} color='white' />
-                                    {" "}Dashboard</Title>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.dashboardItemOdd} >
-                            <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('AvailableTrips',{id:userId})}>
-                                <MaterialIcons name='home' size={20} color='white' />
-                                    {" "}Home</Title>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.dashboardItemEven} >
-                            <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('CreateAuction',{id:userId})}>
-                                <MaterialIcons name='add' size={20} color='white' />
-                                    {" "}Create Auction</Title>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.dashboardItemOdd} >
-                            <View  >
-                                <Title style={{ color: 'white' ,fontSize:18 }} onPress={()=>navigation.navigate('MyAuctions',{id:userId})}>
-                                <MaterialIcons name='list-alt' size={20} color='white' />
-                                    {" "}My Auction</Title>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.dashboardItemEven} >
-                            <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('my-shipments',{id:userId})}>
-                                <MaterialCommunityIcons name='truck-delivery' size={20} color='white' />
-                                    {" "}My Shipments</Title>
-                            </View>
-                        </TouchableOpacity>
+                    </TouchableOpacity>                        
                     </View>
                 ) : (
                     <View style={{ width: '100%' }} >
                         <TouchableOpacity style={styles.dashboardItemEven} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('Dashboard',{id:userId})}>
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('Dashboard',{id:userId})}>
                                 <MaterialIcons name='dashboard' size={20} color='white' />
                                     {" "}Dashboard</Title>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemOdd} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('AvailableAuctions')}>
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('AvailableAuctions')}>
                                 <FontAwesome5 name='gavel' size={20} color='white' />
                                     {" "}Open Auctions</Title>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemEven} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} onPress={()=>navigation.navigate('MyVehicles')}
+                                <Title style={{ color: 'white',fontSize:16  }} onPress={()=>navigation.navigate('MyVehicles')}
                                 >
                                 <MaterialCommunityIcons name='car-multiple' size={20} color='white'  />
                                     {" "}Manage Vehicles</Title>
@@ -99,7 +99,7 @@ const CustomDrawer = ({navigation}) => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemOdd} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }}
+                                <Title style={{ color: 'white',fontSize:16  }}
                                 onPress={()=>navigation.navigate('MyOffers',{
                                     accountId:userId
                                 })}
@@ -110,14 +110,14 @@ const CustomDrawer = ({navigation}) => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemEven} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }}  onPress={()=>navigation.navigate('MyTrips')}>
+                                <Title style={{ color: 'white',fontSize:16  }}  onPress={()=>navigation.navigate('MyTrips')}>
                                 <MaterialIcons name='car-repair' size={20} color='white' />
                                     {" "}My Trips</Title>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemOdd} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} 
+                                <Title style={{ color: 'white',fontSize:16  }} 
                                 onPress={()=>navigation.navigate('Profile',{
                                     // id:user.account._id
                                     id:userId
@@ -129,7 +129,7 @@ const CustomDrawer = ({navigation}) => {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.dashboardItemOdd} >
                             <View  >
-                                <Title style={{ color: 'white',fontSize:18  }} 
+                                <Title style={{ color: 'white',fontSize:16  }} 
                                 onPress={()=>navigation.navigate('CurrentShipment',{
                                     id:userId
                                 })}
@@ -156,9 +156,11 @@ const styles = StyleSheet.create({
     },
     dashboardItemEven: {
         padding: 10,
-        backgroundColor: 'blue'
+        fontSize:13,
+        // backgroundColor: 'blue'
     },
     dashboardItemOdd: {
+        fontSize:8,
         padding: 10,
     }
 })

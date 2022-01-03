@@ -96,14 +96,14 @@ const EditProfile = ({navigation}) => {
                 <Text style={styles.tags}>Province :</Text>
             </View>
             <View
-            style={{width:'60%',height:'100%',position:'absolute',left:"45%",top:'12%'}}>
+            style={{width:'50%',height:'100%',position:'absolute',left:"45%",top:'12%'}}>
             <Input style={styles.Input} onChangeText={txt=>setFirstName(txt)} value={firstName} variant="underlined" placeholder="Minhaj" />
             <Input style={styles.Input} onChangeText={txt=>setLastName(txt)} value={lastName} variant="underlined" placeholder="Sohail" />
             <Input style={styles.Input} onChangeText={txt=>setStreet(txt)} value={street} variant="underlined" placeholder="312" />
             <Input style={styles.Input} onChangeText={txt=>setTown(txt)} value={town} variant="underlined" placeholder="Landhi" />
             <Select
             selectedValue={city}
-        minWidth="200"
+        // minWidth="200"
         accessibilityLabel="Choose City"
         placeholder="Choose City"
         _selectedItem={{
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         paddingTop:33,
         paddingLeft:20,
         textDecorationColor:'black',
-        textDecorationLine:'underline'
+        // textDecorationLine:'underline'
     },
     Input:{
         fontSize:13,

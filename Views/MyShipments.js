@@ -57,7 +57,7 @@ catch(err){
 setError(err.message)
 setErrorShow(true)
 }
-userId=1;
+// userId=1;
 }
 
 const handleDataFilter = (type)=>{
@@ -170,7 +170,7 @@ const handleChange=(city,type)=>{
               </View>
             }
                 <Flex ml={250} mr={10}>
-            <Button onPressIn={toggleFilter}>
+            <Button onPressIn={toggleFilter} size={'sm'}>
                 Filter                
             </Button>
             </Flex>
@@ -239,12 +239,16 @@ const handleChange=(city,type)=>{
         md: 0,
       }}
     >
-      <Button onPress={()=>handleDataFilter('All')} size="xs" style={styles.button1}>All</Button>
-      <Button onPress={()=>handleDataFilter('Active')} size="xs" style={styles.button}>Active</Button>
-      <Button onPress={()=>handleDataFilter('Pending')} size="xs" style={styles.button}>Pending</Button>
-      <Button onPress={()=>handleDataFilter('Completed')} size="xs" style={styles.button}>Completed</Button>
-      <Button onPress={()=>handleDataFilter('Waiting')} size="xs" style={styles.button}>Waiting</Button>
+      <Button onPress={()=>handleDataFilter('All')} size="sm" style={styles.button1}>All</Button>
+      <Button onPress={()=>handleDataFilter('Active')} size="sm" style={styles.button}>Active</Button>
+      <Button onPress={()=>handleDataFilter('Pending')} size="sm" style={styles.button}>Pending</Button>
+      <Button onPress={()=>handleDataFilter('Completed')} size="sm" style={styles.completed}>Completed</Button>
+      <Button onPress={()=>handleDataFilter('Waiting')} size="sm" style={styles.button}>Waiting</Button>
     </Button.Group>
+    {
+              shipments.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>There is no shipment.</Text>
+            }
       <ScrollView style={{marginBottom:170}}>
           {
             shipments &&
@@ -270,7 +274,12 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     button1:{
-        width:70,
+        width:50,
+        height:40,
+    },
+    completed:{
+        width:80,
+        marginLeft:-12,
         height:40,
     },
     button:{

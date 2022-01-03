@@ -29,10 +29,13 @@ const CustomDrawerHeader = ({ navigation }) => {
     const handleRoleChange = async () => {
         if (currentRole === "Carrier") {
             dispatch(setUserType("Shipper"))
+        navigation.navigate('Dashboard') 
+
         } else {
             var {data} = await axios.post(`${Root.production}/user/findorCreateCarrierRole`,{accountId:userId});
             if(data.status==200){
                 dispatch(setUserType("Carrier"))
+                navigation.navigate('Dashboard') 
             }
           else if(data.status==405){
             Alert.alert(data.message)
@@ -55,7 +58,7 @@ const CustomDrawerHeader = ({ navigation }) => {
               console.log(err.message,'===< signout error')
             }
             }
-       navigation.navigate('Login') 
+        navigation.navigate('Login') 
     }
 
     return (
@@ -75,7 +78,6 @@ const CustomDrawerHeader = ({ navigation }) => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-
 
             <View style={{ flexDirection: 'row' }} >
                 <Icon name='menu' size={35} color='white' onPress={() => navigation.openDrawer()} />

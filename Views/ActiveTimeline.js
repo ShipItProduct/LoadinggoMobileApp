@@ -12,7 +12,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Text,Heading} from 'native-base'
 import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
-
+import { Colors } from '../Components/Colors/Colors';
 
 const ActiveTimeline = ({shipmentData,from}) => {
 
@@ -206,38 +206,50 @@ const ActiveTimeline = ({shipmentData,from}) => {
                 </Text>
               </View>
             }
-            <ScrollView>
+            <ScrollView style={{height:150}}>
             { disable &&
               shipmentData.map((v,i)=>{
+                console.log(v.packageStatus)
                 if(v.type=='from'){
-                if(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up"){
+                // if(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up"){
                     return(
+                      <>
                       <View key={i}>
-                        <Button style={styles.pickup}
+                        <Button style={(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up")  ? 
+                        { width:200,  marginTop:10,  backgroundColor:Colors[v.count-1]} : 
+                        { width:200,  marginTop:10,  backgroundColor:'lightgray'}}
+                        disabled={(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up") ? false : true}
                         onPress={()=>handlePickedUp(v.packageId)}
-                        >{`Pick Up ${v.count}`}</Button>
+                        >{`User ${v.count} Pick Up`}</Button>
                       </View>
-                    )
-                }else if(v.packageStatus =='picked_up'){
-                    return(
+                {/* //     ) */}
+                {/* // // }else if(v.packageStatus =='picked_up'){ */}
+                {/* //     return( */}
                       <View key={i}>
-                        <Button style={styles.Verify}
+                        <Button style={v.packageStatus =='picked_up'  ? 
+                        { width:200,  marginTop:10,  backgroundColor:Colors[v.count-1]} : 
+                        { width:200,  marginTop:10,  backgroundColor:'lightgray'}}
+                        disabled={v.packageStatus =='picked_up' ? false : true}
                         onPress={()=>handleVerify(v.packageId,v.shipmentId)}
-                        >{`Verify ${v.count}`}</Button>
+                        >{`User ${v.count} Image Verification`}</Button>
                         </View>
+                        </>
                     )
-                }
+                // }
                 }
                 else if(v.type=='to'){
-                    if(v.packageStatus=='delivery_in_progress'){
+                    // if(v.packageStatus=='delivery_in_progress'){
                         return(
                           <View key={i}>
-                        <Button style={styles.DropOff}
+                        <Button style={v.packageStatus=='delivery_in_progress' ? 
+                        { width:200,  marginTop:10,  backgroundColor:Colors[v.count-1]} : 
+                        { width:200,  marginTop:10,  backgroundColor:'lightgray'}}
+                        disabled={v.packageStatus=='delivery_in_progress' ? false : true}
                         onPress={()=>handleDropOff(v.shipmentId,v.accountId)}
-                        >{`Drop Off ${v.count}`}</Button>
+                        >{`User ${v.count} Drop Off`}</Button>
                         </View>
                         )
-                    }
+                    // }
                 }
                 })}
             </ScrollView>

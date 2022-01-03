@@ -5,10 +5,11 @@ import axios from 'axios';
 import Location from '../Components/MapsLocations/location';
 import ActiveTimeline from './ActiveTimeline.js'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Text,Heading} from 'native-base'
+import {Text,Heading,Modal,HStack,VStack,Button} from 'native-base'
 import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
-
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Colors } from './../Components/Colors/Colors.js';
 
 const CurrentShipment = ({route,navigation}) => {
 
@@ -24,7 +25,11 @@ const CurrentShipment = ({route,navigation}) => {
     let [errorShow,setErrorShow] = useState(false);
     const updation = useSelector(state=>state.updation)
     const dispatch = useDispatch();
-    
+    const [showModal, setShowModal] = useState(false)
+    var [remainedArray,setRemainedArray] = useState([])
+    var [shipmentsIdArray,setShipmentsIdArray] = useState([])
+    var [newShipmentList,setNewShipmentList] = useState([]);
+
     useEffect(()=>{
         fetching();
     },[updation])
@@ -120,8 +125,34 @@ const CurrentShipment = ({route,navigation}) => {
               }
               return 0;
             });
+            // begining of pickup and dropoff sorting
+            for(let i=0;i<shipmentData.length;i++){
+              if(shipmentData[i].type==='from'){
+                newShipmentList.push(shipmentData[i]);
+                // setNewShipmentList(newShipmentList);
+                shipmentsIdArray.push(shipmentData[i].shipmentId)
+                // setShipmentsIdArray(shipmentsArray)
+              }
+              else if(shipmentData[i].type==='to'){
+                var indexIs= shipmentsIdArray.findIndex((val)=>val===shipmentData[i].shipmentId)
+                if(indexIs!=-1){
+                  newShipmentList.push(shipmentData[i]);
+                  // setNewShipmentList(newShipmentList);
+                  shipmentsIdArray.push(shipmentData[i].shipmentId)
+                  // setShipmentsIdArray(shipmentsArray)
+                }
+                else{
+                  remainedArray.push(shipmentData[i])
+                  // setRemainedArray(remainedArray)
+                }
+              }
+            }
+            remainedArray.map((v,i)=>{
+              newShipmentList.push(v);
+            })
           }
         }
+
           
           setShipmentsList(shipmentsList);
           setShipmentData(shipmentData);
@@ -141,8 +172,39 @@ catch(err){
           departureLongitude=long;
           setDepartureLatitude(departureLattitude);
           setDepartureLongitude(departureLongitude);
+            //     console.log('---==>',shipmentsArray.findIndex(2))
   }
+
+
     return (
+      <>
+                        <Modal isOpen={showModal} onClose={() => setShowModal(false)} size="lg">
+                  <Modal.Content maxWidth="350">
+          <Modal.Header>Color Codes</Modal.Header>
+          <Modal.Body>
+            <VStack space={3}>
+        {Colors.map((v,i)=>(
+          <HStack alignItems="center" justifyContent="space-between">
+            <View style={{height:20,width:50,backgroundColor:v}}></View>
+            <Text>{`Color For User ${i+1}`}</Text>
+          </HStack>
+              ))}
+
+            </VStack>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              flex="1"
+              onPress={() => {
+                setShowModal(false)
+              }}
+            >
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+
         <View>
                   {
               errorShow &&
@@ -156,14 +218,18 @@ catch(err){
                 </Text>
               </View>
             }
+            
             <Text style={{fontSize:20,marginLeft:10,marginTop:10,fontWeight:'bold'}}>
                 Current Shipments 
             </Text>
+            <View style={{display:'flex',alignItems:'flex-end',marginRight:20}}>
+              <AntDesign name="infocirlce" size={20}  onPress={()=>setShowModal(true)}/>
+            </View>
             <Location handleLocations={handleLocations} handle={true} />
             {
               (departureLattitude!==0 && departureLongitude!==0) &&
             <ActiveTimeline
-              shipmentData={shipmentData}
+              shipmentData={newShipmentList}
               from={{
                 longitude: departureLongitude,
                 latitude: departureLattitude,
@@ -171,6 +237,7 @@ catch(err){
             />
             }
         </View>
+        </>
     )
 }
 

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import { Headline, Surface,  Title } from 'react-native-paper';
 import {Root} from './../Config/root'
+import {Heading} from 'native-base';
 import axios from 'axios';
 import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
@@ -99,6 +100,9 @@ catch(err){
             <View style={{flexDirection:'row' , alignItems:'center', justifyContent:'space-between'}} >
                 <Headline style={{width:'90%',fontFamily:'cursive',fontSize:30,marginTop:20,fontWeight:'bold'}} >{`Welcome back, ${currentRole}`}</Headline>
             </View>
+            <View>
+                <Heading fontSize={20} color={'blue.500'} mt={4} mb={-7}>Offers as Carrier: </Heading>
+            </View>
             <View style={styles.dashboardStats}  >
                 <Surface style={styles.dashStatItem} >
                     <Text style={{ color: 'black',textAlign:'center' ,paddingHorizontal:10}} >
@@ -118,6 +122,9 @@ catch(err){
                     </Text>
                     <Text>{pendingOrders}</Text>
                 </Surface>
+            </View>
+            <View>
+                <Heading fontSize={20} color={'blue.500'} mt={4} mb={-7}>Shipments as Shipper: </Heading>
             </View>
             <View style={styles.dashboardStats}  >
                 <Surface style={styles.dashStatItem} >
@@ -139,7 +146,9 @@ catch(err){
                     <Text>{pendingShipments}</Text>
                 </Surface>
             </View>
-
+            <View>
+                <Heading fontSize={20} color={'blue.500'} mt={4} mb={-7}>Trips as Carrier: </Heading>
+            </View>
             <View style={styles.dashboardStats}  >
                 <Surface style={styles.dashStatItem} >
                     <Text style={{ color: 'black' ,textAlign:'center',paddingHorizontal:15 }} >

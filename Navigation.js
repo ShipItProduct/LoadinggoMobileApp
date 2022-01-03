@@ -33,8 +33,8 @@ const Navigation = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name='ResetPassword' component={ResetPassword} />
-        <Stack.Screen name="EnterEmailForForgetPassword" component={EnterEmailForForgetPassword} />
         <Stack.Screen name="BuildProfile" component={BuildProfile} />
+        <Stack.Screen name="EnterEmailForForgetPassword" component={EnterEmailForForgetPassword} />
         <Stack.Screen name="EmailVerification" component={EmailVerificationPage} />
         <Stack.Screen name="dashboard-app" component={Dashboard} />
       </Stack.Navigator>

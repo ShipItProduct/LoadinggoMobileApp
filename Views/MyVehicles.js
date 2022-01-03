@@ -106,7 +106,7 @@ const handleAddNew =async()=>{
               </View>
             }
             <Flex ml={220} mr={10}>
-            <Button colorScheme="blue" onPress={()=>setShowModal(true)}>
+            <Button colorScheme="blue" onPress={()=>setShowModal(true)} size={'sm'}>
                 Add New                
             </Button>
             </Flex>
@@ -145,6 +145,10 @@ const handleAddNew =async()=>{
         </Modal.Content>
       </Modal>
       <ScrollView style={{marginBottom:170}}>
+      {
+              vehiclesArray.length==0 &&
+              <Text style={{display:'flex',alignSelf:'center',marginTop:20}}>You don't have any Vehicle.</Text>
+            }
           {
             vehiclesArray &&
             vehiclesArray.reverse().map((v,i)=>{
