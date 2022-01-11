@@ -14,7 +14,7 @@ import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
 import { Colors } from '../Components/Colors/Colors';
 
-const ActiveTimeline = ({shipmentData,from}) => {
+const ActiveTimeline = ({shipmentData,from,navigation}) => {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -27,13 +27,33 @@ const ActiveTimeline = ({shipmentData,from}) => {
     const [file,setFile]=useState('');
     const [photoName,setPhotoName]=useState('');
     const [currentPackage,setCurrentPackage]=useState('');
+  var [listForRoute, setListForRoute] = useState([]);
     const [currentShipment,setCurrentShipment]=useState('');
     const [accountId,setAccountId] = useState('');
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
     const updation = useSelector(state=>state.updation)
     const dispatch = useDispatch();
-    
+    var [update,setUpdate] = useState(false)    
+
+      // setListForRoute([]);
+      for(let i=0;i<shipmentData.length;i++){
+          if(shipmentData[i].type=='from'){
+        if(shipmentData[i].packageStatus==='not_picked_up' || shipmentData[i].packageStatus==='NOT_PICKED_UP' ||
+         shipmentData[i].packageStatus==='picked_up'){
+            listForRoute.push(shipmentData[i])
+          }
+        }
+       // end of if
+        else if(shipmentData[i].type=='to'){
+        if(shipmentData[i].packageStatus!=='dropped_off'){
+                listForRoute.push(shipmentData[i])
+        }
+          } // end of else
+      } // end of for loop
+      // setListForRoute(listForRoute)
+  
+
     const handleVerify =(packageId,shipmentId)=>{
       setCurrentPackage(packageId)
       setCurrentShipment(shipmentId)
@@ -254,8 +274,10 @@ const ActiveTimeline = ({shipmentData,from}) => {
                 })}
             </ScrollView>
             </Center>
-            { shipmentData[0] &&
-      <RoutedMap from={from} shipmentData={shipmentData}/>
+            { listForRoute[0] &&
+      <RoutedMap from={from} shipmentData={listForRoute}
+      navigation={navigation}
+      />
             }
 
         </View>

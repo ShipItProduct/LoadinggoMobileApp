@@ -1,16 +1,19 @@
+import GetLocation from 'react-native-get-location'
 import MapViewDirections from 'react-native-maps-directions';
- import React,{useState} from 'react';
+ import React,{useState,useEffect} from 'react';
 import MapView, { PROVIDER_GOOGLE ,Marker,Callout} from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions,TouchableOpacity, Pressable } from 'react-native';
 import {Colors} from './../Colors/Colors.js';
 import { HStack,VStack,Modal,Button } from 'native-base';
 
-export default function RoutedMap({shipmentData,from}) {
+export default function RoutedMap({shipmentData,from,navigation}) {
 
   let [region,setRegion]=useState()
   const [modalData,setModalData] = useState({})
+  var [departLati,setDepartLati] = useState( from.latitude)
+  var [departLongi,setDepartLongi] = useState(from.longitude)
   const [showModal,setShowModal] = useState(false);
-  const firstOrigin = {latitude: from.latitude, longitude: from.longitude };
+  const firstOrigin = {latitude: departLati, longitude: departLongi };
 const firstDestination = {latitude: shipmentData[0].latitude, longitude: shipmentData[0].longitude };
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDhX60syaCg5jYirejPmeWfLHubpa2kPXo';
 region={
@@ -23,6 +26,38 @@ region={
     const onRegionChange=(reg)=> {
       setRegion(reg);
     }
+
+    useEffect(()=>{
+      setInterval(()=>{
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+      })
+      .then(location => {
+        departLati=location.latitude
+        departLongi=location.longitude
+        setDepartLati(departLati);
+        setDepartLongi(departLongi);
+
+        // console.log('loc lati==>',location.latitude)
+        // console.log('loc longi==>',location.longitude)
+        // console.log('lati==>',departLati)
+        // console.log('longi==>',departLongi)
+      // Alert.alert('We get your current location.')
+      })
+      .catch(error => {
+          const { code, message } = error;
+          // console.warn(code, message);
+          if(message=="Location not available"){
+              Alert.alert('Please open your mobile location and try again.')
+              navigation.navigate('Dashboard')
+              // setMsg()
+          }
+  
+      })
+  
+      },5000)
+    },[])
 
     const handleModal=(data)=>{
       setModalData(data)
@@ -40,7 +75,7 @@ region={
                 <Text fontWeight="medium" style={{color:Colors[modalData.count-1]}}>User {modalData.count}</Text>
                 <Text fontWeight="medium" style={{color:'#fff'}}>{modalData.type == 'from' ? 'Its a Recieving Point' : 'Its a dropoff Point'}</Text>
                 <Text fontWeight="medium" style={{color:'#fff'}}>shipmentStatus: {'\n' + modalData.shipmentStatus}</Text>
-                <Text fontWeight="medium" style={{color:'#fff'}}>packageStatus: {modalData.packageStatus=='dropped_off' ? '\nYou Dropped Your Parcel but Shipper Have not confirmed it yet' : modalData.packageStatus}</Text>
+                <Text fontWeight="medium" style={{color:'#fff'}}>packageStatus: {modalData.packageStatus=='dropped_off' ? `\nYou Dropped Your Parcel but Shipper Have not confirmed it yet` : modalData.packageStatus}</Text>
                 <Text fontWeight="medium" style={{color:'#fff'}}>Package Id: {modalData.packageId}</Text>
                 <Text fontWeight="medium" style={{color:'#fff'}}>shipment Id: {modalData.shipmentId}</Text>
               {/* </HStack> */}

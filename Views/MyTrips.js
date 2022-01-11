@@ -44,6 +44,7 @@ const fetching=async()=>{
       trips=data.message
       display=data.message
         setTrips(data.message)
+        setDisplay(data.message)
         if(data.message.length===0){
           setErrorShow(true)
           setError('You have no trip')

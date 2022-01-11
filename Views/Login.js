@@ -7,14 +7,14 @@ import axios from 'axios'
 import {Root} from '../Config/root'
 import {setUserData} from '../Store/action';
 import {GoogleSignin,GoogleSigninButton,statusCodes} from '@react-native-google-signin/google-signin';
-import {LoginButton, AccessToken } from 'react-native-fbsdk';
+import {LoginButton, AccessToken,LoginManager } from 'react-native-fbsdk';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Login = ({navigation}) => {
 
     const dispatch =useDispatch();
-    let [email , setEmail] = useState('bot2@gmail.com')
-    let [password , setPassword] = useState('shipitbot2')
+    let [email , setEmail] = useState('')
+    let [password , setPassword] = useState('')
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
     const [disabled , setDisabled] = useState(false)
@@ -119,7 +119,28 @@ const Login = ({navigation}) => {
     }
     }
 
+const handleFirebaseFacebook= async()=>{
+  
+  // Attempt login with permissions
+  const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
+  if (result.isCancelled) {
+    throw 'User cancelled the login process';
+  }
+
+  // Once signed in, get the users AccesToken
+  const data = await AccessToken.getCurrentAccessToken();
+
+  if (!data) {
+    throw 'Something went wrong obtaining access token';
+  }
+
+  // Create a Firebase credential with the AccessToken
+  const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(facebookCredential);
+}
 
     return (
         <View style={styles.loginPage} >
@@ -137,7 +158,11 @@ const Login = ({navigation}) => {
                 </Text>
               </View>
             }
-
+    <Button
+      onPress={() => handleFirebaseFacebook().then(() => console.log('Signed in with Facebook!'))}
+    >
+      Firebase Facebok Login
+      </Button>
             <View style={{alignItems:'center'}}  >
                 <TextInput label='Email' mode='outlined' style={styles.input} value={email} onChangeText={(text) => setEmail(text) } left={<TextInput.Icon name='email-outline' />}  />
                 <TextInput label='Password'  mode='outlined' style={styles.input} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} left={<TextInput.Icon name='lock-outline' />} />

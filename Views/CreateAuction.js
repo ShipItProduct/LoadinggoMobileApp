@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import {View,StyleSheet,TouchableOpacity} from 'react-native';
-import { HStack,VStack ,Center,Input,Select,CheckIcon,Radio,Button,Modal,Pressable} from 'native-base';
+import { Flex,HStack,VStack ,Center,Input,Select,CheckIcon,Radio,Button,Modal,Pressable} from 'native-base';
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps';
 import axios from 'axios';
 import {Root} from './../Config/root';
@@ -52,10 +52,16 @@ const [showModal2, setShowModal2] = useState(false)
 const [locationType,setLocationType]=useState('')
 let [error,setError] = useState('');
 let [errorShow,setErrorShow] = useState(false);
+const [step,setStep] = useState(0);
 const user = useSelector(state=>state.user)
 const userId = user?.account?._id;
 const updation = useSelector(state=>state.updation)
 const dispatch = useDispatch();
+
+const handleStep = (val)=>{
+  setStep(val);
+  setErrorShow(false)
+}
 
 const handleLocationModal =(type)=>{
     setLocationType(type)
@@ -108,14 +114,9 @@ const   defaultScrollViewProps = {
   };
 
   const handleSubmit =async()=>{
-    console.log('chl gya')
-    if(durationTime===0 || startingBid==='' || pickUpDate==='' || pickUpTime==='' ||
-    pickUpAddress==='' || pickupCity==='' || pickupLattitude===0 || pickupLongitude===0
-    || dropOffLattitude===0 || dropOffLongitude===0 || width==='' || height===''
-    || dropOffAddress==='' || contactName==='' || contactNumber==='' || dropOffCity===''
-    || weight==='' || shipmentType==='' || packageWorth==='' || dropOffDate==='' || dropOffTime===''){
+    if(durationTime===0 || startingBid===''){
       setErrorShow(true)
-      setError('Please fill form completely')
+      setError('Please fill form completely.')
     }
     else{
       try{
@@ -172,22 +173,38 @@ catch(err){
     }
     }
 
+const handleFirstStep=()=>{
+  if(dropOffLattitude===0 || dropOffLongitude===0 || pickupLattitude===0 || pickupLongitude===0){
+    setErrorShow(true)
+    setError('Please Select your pickup and dropOff.')
+  }else if(pickUpDate==='' || pickUpTime==='' || pickUpAddress==='' || pickupCity==='' || 
+  dropOffDate==='' || dropOffTime==='' || dropOffAddress==='' || contactName==='' || 
+  contactNumber==='' || dropOffCity===''){
+    setErrorShow(true)
+    setError('First fill all fields of this form completely.')
+  }else{
+    handleStep(1)
+  }
+}
+
+const handleSecondStep=()=>{
+  if(photo==''){
+    setErrorShow(true)
+    setError('Please Upload your shipment image.')
+  }
+  else if( width==='' || height==='' || weight==='' || shipmentType==='' || packageWorth===''){
+    setErrorShow(true)
+    setError('Fill all fields of this form completely.')
+  }else{
+    handleStep(2)
+  }
+}
+
     return (
         <ScrollView style={styles.parent}>
-                {
-                errorShow &&
-                <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
-                  <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
-                      <MaterialIcons name="error" size={20} color="#F0625F"/>
-                      Creation Error
-                  </Heading>
-                   <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
-                      {error}
-                  </Text>
-                </View>
-              }
-        <ProgressSteps>
+        <ProgressSteps activeStep={step}>
           <ProgressStep
+            removeBtnRow
             label={"Pickup & DropOff Details"}
             scrollViewProps={defaultScrollViewProps}
           >
@@ -349,11 +366,24 @@ catch(err){
         </Select>
         </View>
                   </VStack>
+                  {
+                errorShow &&
+                <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                      <MaterialIcons name="error" size={20} color="#F0625F"/>
+                   <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                      {error}
+                  </Text>
+                </View>
+              }
+                  <Flex flexDirection={'row-reverse'}>
+          <Button mr={4} mt={4} mb={10} size={'md'} onPress={()=>handleFirstStep()} variant={'subtle'} colorScheme="primary" style={{fontWeight:'bold',width:'20%'}}>Next</Button>
+                  </Flex>
           </ScrollView>
 
           </ProgressStep>
 {/* step # 02 */}
           <ProgressStep
+            removeBtnRow
             label="Package Details"
             scrollViewProps={defaultScrollViewProps}
           >
@@ -440,10 +470,29 @@ catch(err){
                           </View>
                       </View>
               </VStack>
+              {
+                errorShow &&
+                <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                      <MaterialIcons name="error" size={20} color="#F0625F"/>
+                   <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                      {error}
+                  </Text>
+                </View>
+              }
+              <HStack>
+                  <VStack w={'50%'}>
+          <Button ml={4} mt={4} mb={10} size={'md'} onPress={()=>handleStep(0)} variant={'subtle'} colorScheme="dark" style={{fontWeight:'bold',width:'60%'}}>Back</Button>
+          </VStack>
+          <VStack w={'50%'} flexDirection={'row-reverse'}>
+          <Button mr={4} mt={4} mb={10} size={'md'} onPress={()=>handleSecondStep()} variant={'subtle'} colorScheme="primary" style={{fontWeight:'bold',width:'60%'}}>Next</Button>
+                  </VStack>
+                  </HStack>
+
           </ProgressStep>
 
 {/* step # 3 */}
           <ProgressStep
+            removeBtnRow
             label="Auction Details"
             onSubmit={handleSubmit}
             scrollViewProps={defaultScrollViewProps}
@@ -479,6 +528,24 @@ onValueChange={(itemValue) => setDurationTime(itemValue)}>
             variant="underlined" placeholder="Rs : (PKR)" />
 
             </VStack>
+            {
+                errorShow &&
+                <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                      <MaterialIcons name="error" size={20} color="#F0625F"/>
+                   <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                      {error}
+                  </Text>
+                </View>
+              }
+              <HStack>
+                  <VStack w={'50%'}>
+          <Button ml={4} mt={4} mb={10} size={'md'} onPress={()=>handleStep(1)} variant={'subtle'} colorScheme="dark" style={{fontWeight:'bold',width:'60%'}}>Back</Button>
+          </VStack>
+          <VStack w={'50%'} flexDirection={'row-reverse'}>
+          <Button mr={4} mt={4} mb={10} size={'md'} onPress={()=>handleSubmit()} variant={'subtle'} colorScheme="success" style={{fontWeight:'bold',width:'60%'}}>Submit</Button>
+                  </VStack>
+                  </HStack>
+
           </ProgressStep>
 
         </ProgressSteps>
@@ -492,7 +559,6 @@ const styles = StyleSheet.create({
     parent:{
         fontSize:20,
         paddingTop:20,
-        paddingLeft:20,
         color:'black',
         fontWeight:'bold'
     },

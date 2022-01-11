@@ -63,13 +63,16 @@ const AddTrip = ({navigation}) => {
   }
 }
 const handleSubmit =async()=>{
-  if(departureAddress==='' || destinationAddress==='' || pricePerShipmentOrder==='' || destinationCity==='' ||
-  departureCity==='' || vehicles==='' || departureLattitude===0 || departureLongitude===0|| 
-  destinationLattitude===0 || destinationLongitude===0 || departureDate==='' || departTime===''
+  if( departureLattitude===0 || departureLongitude===0|| destinationLattitude===0 || destinationLongitude===0){
+    setErrorShow(true)
+    setError('Please select your Departure and Destination.')
+  }else if(departureAddress==='' || destinationAddress==='' || pricePerShipmentOrder==='' || destinationCity==='' ||
+  departureCity==='' || vehicles==='' ||  departureDate==='' || departTime===''
   ){
     setErrorShow(true)
     setError('Please fill form completely')
-  }else{
+  }
+  else{
     var send = {
       departureAddress,
       destinationAddress,
@@ -207,19 +210,7 @@ const handleSubmit =async()=>{
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-              {
-              errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
-                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
-                    <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Creation Error
-                </Heading>
-                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
-                    {error}
-                </Text>
-              </View>
-            }
-            <Heading size="sm">From Details</Heading>
+            <Heading size="sm" mt={4} mb={2}>From Details:</Heading>
             <Button size={'sm'} onPress={()=>handleLocationModal('pickUp')} colorScheme="info" style={{width:'90%'}}>Select PickUp</Button>
                       <Input style={styles.Input} value={departureAddress}
                       onChangeText={txt=>setDepartureAddress(txt)}
@@ -268,7 +259,7 @@ const handleSubmit =async()=>{
                               onCancel={hideTimePicker}
                           />
                       </View>
-                      <Heading size="sm">To Details</Heading>
+                      <Heading size="sm" mt={4} mb={2}>To Details:</Heading>
             <Button size={'sm'} onPress={()=>handleLocationModal('dropOff')} colorScheme="info" style={{width:'90%'}}>Select DropOff</Button>
                       <Input style={styles.Input} value={destinationAddress}
                       onChangeText={txt=>setDestinationAddress(txt)}
@@ -316,6 +307,15 @@ const handleSubmit =async()=>{
                       <Input style={styles.Input} value={pricePerShipmentOrder}
                       onChangeText={txt=>setPricePerShipmentOrder(txt)}
                       variant="underlined" placeholder="Price Per Shipment" />
+              {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'5%',width:'80%'}}>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:10}}>
+                  {`Error:${error}`}
+                </Text>
+              </View>
+            }
+
         <Button size={'sm'} onPress={()=>handleSubmit()} colorScheme="success" style={{width:'90%',marginVertical:5}}>Add</Button>
         </View>
     )

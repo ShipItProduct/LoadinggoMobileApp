@@ -20,6 +20,7 @@ const [model,setModel] = useState('')
 const [year,setYear] = useState('')
 const [errorShow,setErrorShow] = useState(false)
 const [showModal,setShowModal] = useState(false);
+const [addShow,setAddShow] = useState(false);
 const user = useSelector(state=>state.user);
 const userId = user?.account?._id;
 const updation = useSelector(state=>state.updation)
@@ -59,10 +60,10 @@ const fetching=async()=>{
 const handleAddNew =async()=>{
   if(licensePlate==='' || color==='' || manufacturer==='' || model==='' ||
   year===''){
-    setError('Please fill all fields');
-    setErrorShow(true)
+    setError('Please fill all fields.');
+    setAddShow(true)
   }else{
-    setErrorShow(false);
+    setAddShow(false);
     try{
   
       var {data} = await axios.post(`${Root.production}/vehicle/addVehicle`,{
@@ -79,11 +80,11 @@ const handleAddNew =async()=>{
       }
       else{
         setError(data.message)
-        setErrorShow(true)
+        setAddShow(true)
       }
     }catch(err){
       setError(err.message)
-      setErrorShow(true)
+      setAddShow(true)
     }
 
   }
@@ -117,6 +118,19 @@ const handleAddNew =async()=>{
           <Modal.Header>{`Add Vehicle`}</Modal.Header>
           <Modal.Body>
             <VStack space={3}>
+            {
+              addShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
+                    <MaterialIcons name="error" size={20} color="#F0625F"/>
+                    Fetching Error
+                </Heading>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    {error}
+                </Text>
+              </View>
+            }
+
                       <Input style={styles.Input} value={licensePlate}
                       onChangeText={txt=>setLicensePlate(txt)}
                       variant="underlined" placeholder="licensePlate" />

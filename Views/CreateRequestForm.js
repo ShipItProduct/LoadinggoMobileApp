@@ -45,13 +45,18 @@ const CreateRequestForm = ({flag,handleFlag,tripData,navigation}) => {
     const dispatch = useDispatch();
     
     const handleSubmit= async()=>{
-      if(shipmentValue==='' || shipmentType==='' || weight==='' || width==='' ||
-      height==='' || dropOffLattitude===0 || dropOffLongitude===0 || pickupLattitude===0 ||
-      pickupLongitude===0 || pickupDate==='' || pickupCity==='' || pickupAddress==='' ||
-      dropoffContactName===0 || dropoffContactNumber==='' || dropoffCity==='' || dropoffAddress===''){
+      if(dropOffLattitude===0 || dropOffLongitude===0 || pickupLattitude===0 || pickupLongitude===0){
+        setErrorShow(true)
+        setError('Please select your pickup and dropoff.')
+      }
+      else if(shipmentValue==='' || shipmentType==='' || weight==='' || width==='' ||
+      height==='' ||  pickupDate==='' || pickupCity==='' || pickupAddress==='' ||
+      dropoffContactName===0 || dropoffContactNumber==='' || dropoffCity==='' || dropoffAddress==='')
+      {
         setErrorShow(true)
         setError('Please fill form completely')
-      }else{
+      }
+      else{
       setErrorShow(false);
       try{
       var send={
@@ -189,18 +194,6 @@ const handleLocations =(long,lati)=>{
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      {
-              errorShow &&
-              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
-                <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
-                    <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Request Error
-                </Heading>
-                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
-                    {error}
-                </Text>
-              </View>
-            }
                 <VStack style={styles.vStack}>
                         <Heading size="md" mt={7}>Pickup Details</Heading>
                         <Button size={'sm'} onPress={()=>handleLocationModal('pickUp')} colorScheme="info" style={{width:'90%'}}>Select PickUp</Button>
@@ -329,6 +322,16 @@ const handleLocations =(long,lati)=>{
             value={shipmentValue} onChangeText={txt=>setShipmentValue(txt)}
             />
                     </VStack>
+                    {
+              errorShow &&
+              <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
+                  <MaterialIcons name="error" size={20} color="#F0625F"/>
+                 <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
+                    Erorr:{error}
+                </Text>
+              </View>
+            }
+
         </ScrollView>
     )
 }

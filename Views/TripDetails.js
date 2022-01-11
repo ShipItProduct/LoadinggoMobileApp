@@ -110,7 +110,7 @@ const handleViewOffers =()=>{
               <View style={{backgroundColor:'#FDEDED',paddingHorizontal:10,paddingVertical:5,borderRadius:5,marginLeft:'10%',width:'80%'}}>
                 <Heading size="sm" style={{borderRadius:4,padding:5,color:'#5F2120',marginLeft:10}}>
                     <MaterialIcons name="error" size={20} color="#F0625F"/>
-                    Login Error
+                    Fetching Error
                 </Heading>
                  <Text style={{padding:5,color:'#5F2120',marginLeft:40}}>
                     {error}
@@ -204,7 +204,8 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
     },
     container:{
-        marginLeft:'5%'
+        marginLeft:'5%',
+        width:'110%'
     },
     subheading:{
         marginTop:10
@@ -214,7 +215,8 @@ const styles = StyleSheet.create({
         backgroundColor:'lightgray',
         padding:8,
         borderRadius:20,
-        marginBottom:10        
+        marginBottom:10,
+        width:'100%',
     },
 })
 

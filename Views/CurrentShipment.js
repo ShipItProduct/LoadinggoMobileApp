@@ -229,6 +229,7 @@ catch(err){
             {
               (departureLattitude!==0 && departureLongitude!==0) &&
             <ActiveTimeline
+            navigation={navigation}
               shipmentData={newShipmentList}
               from={{
                 longitude: departureLongitude,
