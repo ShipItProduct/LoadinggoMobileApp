@@ -36,7 +36,6 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
     const dispatch = useDispatch();
     var [update,setUpdate] = useState(false)    
 
-      // setListForRoute([]);
       for(let i=0;i<shipmentData.length;i++){
           if(shipmentData[i].type=='from'){
         if(shipmentData[i].packageStatus==='not_picked_up' || shipmentData[i].packageStatus==='NOT_PICKED_UP' ||
@@ -51,15 +50,14 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
         }
           } // end of else
       } // end of for loop
-      // setListForRoute(listForRoute)
   
-
+  // fuction to verify shipment
     const handleVerify =(packageId,shipmentId)=>{
       setCurrentPackage(packageId)
       setCurrentShipment(shipmentId)
       handleOpen();
     }
-  
+  // function to handle rating
     const handleRating =async()=>{
       setErrorShow(false);
       try {
@@ -82,7 +80,7 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
         
       }
     }
-  
+  // function to send data to check verification
     const handleCheckVerification= async()=>{
       setErrorShow(false);
       try{
@@ -107,7 +105,7 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
         setError(err.message)      
       }
     }
-  
+  // function to identify pickup
   const handlePickedUp = async (packageId)=>{
     setErrorShow(false);
     try {
@@ -129,7 +127,7 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
       
     }  
   }
-  
+  // function to identify dropoff
   const handleDropOff = async (shipmentId,accountId)=>{
     setErrorShow(false);
     try {
@@ -151,11 +149,11 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
     }
 
   }
-
+// called after 1 second to ensure rendering of other dependent vairables 
   setTimeout(()=>{
     setDisable(true)
   },1000)
-  
+  // method to skip shipment
   const handleSkip = async(shipmentId)=>{
   var {data} = await axios.post(`${Root.production}/trip/cancelShipment`,{
     shipmentOfferId :shipmentId
@@ -166,6 +164,7 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
 
     return (
         <View style={styles.container}>
+          {/* modal for rating */}
         <Modal isOpen={feedbackOpen} onClose={() => handleFeedbackClose()}>
              <Modal.Content maxWidth="400px">
                <Modal.Header>Rate Shipper</Modal.Header>
@@ -183,7 +182,7 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
              </Modal.Content>
            </Modal>     
 
-
+{/* modal for image verification */}
    <Modal isOpen={open} onClose={() => handleClose()}>
         <Modal.Content maxWidth="400px">
           <Modal.Header>Choose Image for verification</Modal.Header>
@@ -231,7 +230,6 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
               shipmentData.map((v,i)=>{
                 console.log(v.packageStatus)
                 if(v.type=='from'){
-                // if(v.packageStatus=='NOT_PICKED_UP' || v.packageStatus=="not_picked_up"){
                     return(
                       <>
                       <View key={i}>
@@ -242,9 +240,6 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
                         onPress={()=>handlePickedUp(v.packageId)}
                         >{`User ${v.count} Pick Up`}</Button>
                       </View>
-                {/* //     ) */}
-                {/* // // }else if(v.packageStatus =='picked_up'){ */}
-                {/* //     return( */}
                       <View key={i}>
                         <Button style={v.packageStatus =='picked_up'  ? 
                         { width:200,  marginTop:10,  backgroundColor:Colors[v.count-1]} : 
@@ -255,10 +250,8 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
                         </View>
                         </>
                     )
-                // }
                 }
                 else if(v.type=='to'){
-                    // if(v.packageStatus=='delivery_in_progress'){
                         return(
                           <View key={i}>
                         <Button style={v.packageStatus=='delivery_in_progress' ? 
@@ -269,7 +262,6 @@ const ActiveTimeline = ({shipmentData,from,navigation}) => {
                         >{`User ${v.count} Drop Off`}</Button>
                         </View>
                         )
-                    // }
                 }
                 })}
             </ScrollView>

@@ -26,9 +26,6 @@ import CreateRequestForm from './CreateRequestForm.js';
 import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import CustomDrawerHeader from '../Components/Drawer/CustomDrawerHeader';
 
-
-
-
 const Drawer = createDrawerNavigator();
 
 const Dashboard = () => {

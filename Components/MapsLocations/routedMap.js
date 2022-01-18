@@ -10,6 +10,7 @@ export default function RoutedMap({shipmentData,from,navigation}) {
 
   let [region,setRegion]=useState()
   const [modalData,setModalData] = useState({})
+  // setting current location points
   var [departLati,setDepartLati] = useState( from.latitude)
   var [departLongi,setDepartLongi] = useState(from.longitude)
   const [showModal,setShowModal] = useState(false);
@@ -22,12 +23,12 @@ region={
   latitudeDelta: 0.001,
   longitudeDelta: 0.001,
 }
-
     const onRegionChange=(reg)=> {
       setRegion(reg);
     }
 
     useEffect(()=>{
+      // setInterval to get position after every 5 seconds
       setInterval(()=>{
         GetLocation.getCurrentPosition({
           enableHighAccuracy: true,
@@ -38,24 +39,14 @@ region={
         departLongi=location.longitude
         setDepartLati(departLati);
         setDepartLongi(departLongi);
-
-        // console.log('loc lati==>',location.latitude)
-        // console.log('loc longi==>',location.longitude)
-        // console.log('lati==>',departLati)
-        // console.log('longi==>',departLongi)
-      // Alert.alert('We get your current location.')
-      })
+     })
       .catch(error => {
           const { code, message } = error;
-          // console.warn(code, message);
           if(message=="Location not available"){
               Alert.alert('Please open your mobile location and try again.')
               navigation.navigate('Dashboard')
-              // setMsg()
-          }
-  
+          }  
       })
-  
       },5000)
     },[])
 

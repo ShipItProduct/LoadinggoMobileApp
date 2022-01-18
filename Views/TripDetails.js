@@ -30,6 +30,7 @@ const TripDetails = ({route,navigation}) => {
         fetching();
     },[id,updation])
 
+    // getting trip details
     const fetching=async()=>{
         setErrorShow(false);
 try{
@@ -40,19 +41,13 @@ try{
         setTrip(data.message)
             //checking for closing of trips
             var today = moment().format('YYYY-MM-DD');
-            console.log('TODAY==>',today)
-            console.log('DEPART TIME==>',data.message.departureDate)
-    // var check = moment(today).isBefore(data.message.departureDate)
     if(today>data.message.departureDate){
       var closingTesting = await axios.post(`${Root.production}/trip/closeTrip`,{
         tripId : data.message._id
       })
-      if(closingTesting.data.status==200){
-          console.log('trip has been closed')
-    //   window.location.reload();
-      }
     }
         try{
+            // fetching vehicle data
         var {data} = await axios.post(`${Root.production}/vehicle/getVehicleById`,{
             vehicleId : data.message.vehicleId
         })
@@ -68,15 +63,12 @@ try{
             setError(err.message)
         }
     }
-    else{
-        console.log(data.message)
-    }
 }
 catch(err){
-    console.warn(err.message)
 }
     }
 
+    // function to cancel trip
     const handleCancel = async()=>{
         setErrorShow(false);
         try{
@@ -85,7 +77,6 @@ catch(err){
         });
         if(data.status==200){
       dispatch(setUpdation())
-      console.log('success on cancel')
         }else{
             setErrorShow(true)
             setError(data.message)
@@ -96,12 +87,12 @@ catch(err){
     }
     }
 
+    // view offer button handler
 const handleViewOffers =()=>{
     navigation.navigate('MyOffers',{
         datalist:trip.shipmentOffers
     })
 }
-
     return (
         <ScrollView>
         <Text style={styles.heading}>Trip Details</Text>

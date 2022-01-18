@@ -25,7 +25,7 @@ const EmailVerificationPage = ({route,navigation}) => {
       setValue,
     });
 
-
+// method to submit email
     const handleCodeSubmit =async () =>{
       if(value===''){
       }else{

@@ -26,6 +26,7 @@ const EditProfile = ({navigation}) => {
         fetching()
     },[])
 
+    // getting user data 
     const fetching = async()=>{
         var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:userId})
         if(data.status==200){
@@ -36,7 +37,7 @@ const EditProfile = ({navigation}) => {
             setProvince(data.message.province)
         }
     }
-
+// edit profile method
     const handleEditProfile=async()=>{
       setErrorShow(false);
         try{
@@ -55,7 +56,6 @@ const EditProfile = ({navigation}) => {
                 accountId:userId
             })
             if(data.status==200){
-                console.log(data.message)
                 navigation.navigate('Profile');
             }
             else{
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
         paddingTop:33,
         paddingLeft:20,
         textDecorationColor:'black',
-        // textDecorationLine:'underline'
     },
     Input:{
         fontSize:13,
@@ -153,7 +152,6 @@ const styles = StyleSheet.create({
     },
     button:{
         width:110,
-        // height:30,
         marginTop:30
     }
 })

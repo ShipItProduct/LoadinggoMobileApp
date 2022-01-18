@@ -19,12 +19,12 @@ const Register = ({navigation}) => {
     let [errorShow,setErrorShow] = useState(false);
     const [disabled , setDisabled] = useState(false)
 
-    const handleSignUp =async () =>{
+      // signUp method using email
+      const handleSignUp =async () =>{
       setDisabled(true)
       setErrorShow(false);
         try {
           var divider1 = email.split("@");
-          console.log(divider1[1].split('.')[1])
               if(username==='' || email=== '' || password ===''){
               setErrorShow(true);
               setError('Please fill form completely.')
@@ -60,13 +60,13 @@ const Register = ({navigation}) => {
       setDisabled(false)
     }
 
+    // google configuration
     GoogleSignin.configure({
       webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
       offlineAccess:true
-      // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
-      // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
   });
 
+    // signup method using google
       const signUpWithGoogle = async () => {
         setErrorShow(false);
         try {
@@ -86,10 +86,7 @@ const Register = ({navigation}) => {
         }
 
         } catch (error) {
-            console.log(error.message)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-            // user cancelled the login flow
-        console.log('cancel')
           } else if (error.code === statusCodes.IN_PROGRESS) {
             // operation (e.g. sign in) is in progress already
         console.log('in progress')
@@ -154,24 +151,18 @@ const Register = ({navigation}) => {
             style={{width:250,height:35,backgroundColor:"blue"}}
             readPermissions={["user_friends", "email"]}
             onLoginFinished={
-                (error, result) => {
-                  console.log('start')
-    
+                (error, result) => {    
                   if (error) {
-                    console.log("login has error: " + result.error);
                   } else if (result.isCancelled) {
-                    console.log("login is cancelled.");
                   } else {
                     AccessToken.getCurrentAccessToken().then(
                       (data) => {
-                        console.log('ho gya')
-                        // console.log(data.accessToken.toString())
                       }
                     )
                   }
                 }
               }
-              onLogoutFinished={() => console.log("logout.")}/>
+              onLogoutFinished={() => {}}/>
             </View>
            <Text
                 style={{color:'blue'}}

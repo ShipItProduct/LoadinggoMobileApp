@@ -21,7 +21,7 @@ const AvailableTripDetails = ({tripData}) => {
     useEffect(()=>{
         fetching();
     },[])
-
+//fetching data
     const fetching=async()=>{
         setErrorShow(false)
         try{
@@ -32,7 +32,6 @@ const AvailableTripDetails = ({tripData}) => {
         if(data.status==200){
             setVehicle(data.message)
         }else{
-        // console.log("erroresg==>",data.message)
         setErrorShow(true);
         setError(data.message)
 
@@ -79,9 +78,6 @@ catch(err){
                     <Text>
                     Trip Id : {trip._id}
                     </Text>
-                    {/* <Text>
-                        Contact Number : 03170112110
-                    </Text>                     */}
                     <Text>
                     From : {trip.departureCity}
                     </Text>

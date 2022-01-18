@@ -30,6 +30,7 @@ const AvailableAuctions = () => {
     const dispatch = useDispatch();
     const [cond,setCond] = useState(false);
     
+//  fetching of all auction
     useEffect(()=>{
       socket.on('FetchAuctions',(data)=>{
       allAuctions=data
@@ -50,27 +51,24 @@ const AvailableAuctions = () => {
         setDepartureLatitude(departureLattitude);
         setDepartureLongitude(departureLongitude);
         setCond(true)
-        // console.log(departureLattitude,departureLongitude)
-      // Alert.alert('We get your current location.')
       })
       .catch(error => {
           const { code, message } = error;
-          // console.warn(code, message);
           if(message=="Location not available"){
-              // Alert.alert('Please open your mobile location and try again.')
               setCond(false)
-              // setMsg()
           }
   
       })
       },13000)
     },[])
     
+  // fetching of auctions on updation in auction database
     useEffect(()=>{
         fectching();
         handleDataFilter('All')
     },[updation])
 
+    // getting auctions
     const fectching=async()=>{
       setErrorShow(false)
         try{
@@ -103,9 +101,9 @@ const AvailableAuctions = () => {
     }
 
     const handleDataFilter = async(val)=>{
+      // start for checking 'open' option
         if(val=='All'){
-      // // start of all checking
-      auctions = [];
+    auctions = [];
       auctions.push(
         allAuctions.filter((val) => {
           var check = (val.status == 'Open' && val.accountId != user.account._id);
@@ -116,6 +114,7 @@ const AvailableAuctions = () => {
       );
       setAuctions(auctions[0]);
       }
+    // start for checking 'pending' option
       else if(val=='Pending'){
       auctions = [];
       auctions.push(
@@ -129,14 +128,9 @@ const AvailableAuctions = () => {
       );  
       setAuctions(auctions[0]);
       }
-      // // end of all checking
-      // else{
-      //   allAuctions=myAllShipments;
-      //   setallAuctions(allAuctions)
-      // }
-    
         }   
     
+// start of filter code
     const filterData = () => {
             auctions = [];
             if (from !== "" && to === "") {
@@ -188,10 +182,12 @@ const AvailableAuctions = () => {
             }
           };
         
+          // funtion to toggle filter box
     const toggleFilter =()=>{
             setShowFilter(!showFilter)
     }
     
+  // function for handle depart and dest city
     const handleChange=(city,type)=>{
         if(type==='to'){
             setTo(city)

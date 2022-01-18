@@ -34,12 +34,12 @@ const CurrentShipment = ({route,navigation}) => {
         fetching();
     },[updation])
 
+    // fetching shipments
     const fetching =async()=>{
       setErrorShow(false);
       try{
 
         setCond(false)
-        // if(departureLattitude!=0 && departureLongitude !=0){
     var {data} = await axios.post(`${Root.production}/trip/getShipmentOffersByCarrier`,{
         carrierId : userId
     })
@@ -167,14 +167,13 @@ catch(err){
   setError(err.message)
 }
     }
+    // function to handle coords
     const handleLocations =(long,lati)=>{
         departureLattitude=lati;
           departureLongitude=long;
           setDepartureLatitude(departureLattitude);
           setDepartureLongitude(departureLongitude);
-            //     console.log('---==>',shipmentsArray.findIndex(2))
   }
-
 
     return (
       <>

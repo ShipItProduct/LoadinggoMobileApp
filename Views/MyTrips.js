@@ -30,9 +30,9 @@ useEffect(()=>{
 useEffect(()=>{
 fetching();
 handleDataFilter('All')
-
 },[updation])
 
+// getting all trips by carrier
 const fetching=async()=>{
   setErrorShow(false);
     try{
@@ -58,14 +58,11 @@ const fetching=async()=>{
   catch(err){
   setError(err.message)
   setErrorShow(true)
-  }
+  }}
   
-  }
-  
-
   const handleDataFilter = (val)=>{
+    // checking of 'all' option
     if(val!='All'){
-  // start of all checking
   display = [];
   display.push(
     trips.filter((v) => {
@@ -77,17 +74,14 @@ const fetching=async()=>{
   );
   display = display[0];
   setDisplay(display);
-  
-  
   }
-  // end of all checking
-  else{
+      // checking the status condition
+      else{
     display=trips;
     setDisplay(display)
   }
     }
   
-
   return (
         <View>
             <Text style={styles.heading}>My Trips</Text>

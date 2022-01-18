@@ -35,13 +35,13 @@ const shipmentDetails = ({route,navigation}) => {
       dispatch(setUpdation())
     },[])
     
-    
     const onClose = () => setIsOpen(false)
 
     useEffect(()=>{
       fetching();
     },[id,updation])
 
+    // getting offer details
     const fetching=async()=>{
       setErrorShow(false);
       try{
@@ -84,7 +84,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
   setErrorShow(true)
   }
     }
-
+  // method to handle terms and cond
     const handleTermsConditions = async() => {
       setErrorShow(false);
         // api will be called
@@ -106,7 +106,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
           setErrorShow(true)
           setError(err.message)}
       };
-
+  // method to confirm dropoff
       const handleConfirmDropoff = async() => {
         setErrorShow(false);
         try{
@@ -127,7 +127,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
           setErrorShow(true)
           setError(err.message)}
       };
-    
+  // method to handle rating
       const handleRating = async() => {
         setErrorShow(false);
         try{
@@ -150,7 +150,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
           setError(err.message)}
 
       };
-
+// close alert
       const handleAlertClose = ()=>{
           navigation.navigate('my-shipments',{id:shipment.shipmentOffer.accountId})
       }

@@ -8,8 +8,6 @@ const Map = ({handleLocations}) => {
   const [longitude, setLongitude] = useState(67.118610);
   const [latitude, setLatitude] = useState(24.931923);
   const origin = {latitude: 24.931923, longitude: 67.118610 };
-//   const destination = {latitude: 24.833187, longitude: 67.160626 };
-// const GOOGLE_MAPS_APIKEY = 'AIzaSyDhX60syaCg5jYirejPmeWfLHubpa2kPXo';
 region={
     latitude:  24.931923,
     longitude: 67.118610 ,

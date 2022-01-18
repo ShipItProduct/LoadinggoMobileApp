@@ -15,6 +15,7 @@ const Complaint = ({navigation,shipperId,shipmentId,carrierId,packageId,chatRoom
     const [errCond,setErrCond] = useState(false);
     const [errorText,setErrorText] = useState('')
  
+    // sending complaint
     const handleComplaint = async()=>{
         setErrCond(false);
         try{
@@ -28,7 +29,6 @@ const Complaint = ({navigation,shipperId,shipmentId,carrierId,packageId,chatRoom
             complaintDescription:complaintDesc,
           })
           if(data.status===200){
-            console.log('ho gya')
             navigation.navigate(`Dashboard`)
           }
         else{
@@ -36,12 +36,9 @@ const Complaint = ({navigation,shipperId,shipmentId,carrierId,packageId,chatRoom
             setErrCond(true)
           }
         }catch(err){
-            console.log('errrorr')
             setErrorText(err.message)
             setErrCond(true)
-    }
-
-    }
+    }}
 
     return (
         <>

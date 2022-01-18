@@ -44,6 +44,7 @@ const AddTrip = ({navigation}) => {
       fectching();
     },[])
 
+    // fetching vehicles to select
     const fectching = async()=>{
       setErrorShow(false);
       try{
@@ -62,6 +63,7 @@ const AddTrip = ({navigation}) => {
     setError(err.message)
   }
 }
+// submit method
 const handleSubmit =async()=>{
   if( departureLattitude===0 || departureLongitude===0|| destinationLattitude===0 || destinationLongitude===0){
     setErrorShow(true)
@@ -90,10 +92,8 @@ const handleSubmit =async()=>{
     }
     setErrorShow(false);
     try{
-    
       var {data} = await axios.post(`${Root.production}/trip/createTrip`,send);
       if(data.status==200){
-        console.log('successfull')
         navigation.navigate('MyTrips');
         dispatch(setUpdation())
       }
@@ -108,6 +108,7 @@ const handleSubmit =async()=>{
   }
 }
 
+// function to handle location
     const handleLocations =(long,lati)=>{
           if(locationType=='pickUp' ){
               setdepartureLattitude(lati);
@@ -118,32 +119,37 @@ const handleSubmit =async()=>{
               setdestinationLongitude(long);
           }
       }
+
+      // function to handle modal for location
       const handleLocationModal =(type)=>{
         setLocationType(type)
         setShowModal(true)
       }
+      // method to display date picker
     const showDatePicker = (type) => {
         setDatePickerVisibility(true);
     };
+      // method to display time picker
     const showTimePicker = (type) => {
         setTimePickerVisibility(true);
     };
+      // method to hide time picker
     const hideTimePicker = () => {
         setTimePickerVisibility(false);
     };
+      // method to hide date picker
+      const hideDatePicker = () => {
+        setDatePickerVisibility(false);
+    };
+      // method to confirm time
     const handleTimeConfirm = (time) => {
       setDepartTime(time)
-      console.log(time)
       hideTimePicker();
-    };      
-    
-    const hideDatePicker = () => {
-      setDatePickerVisibility(false);
-  };
+    };
 
+      // method to confirm date
     const handleConfirm = (date) => {
       setDepartureDate(date)
-      console.log(date)
       hideDatePicker();
   };
 

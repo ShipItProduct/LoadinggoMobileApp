@@ -12,7 +12,7 @@ const EnterEmailForForgetPassword = ({navigation}) => {
     let [error,setError] = useState('');
     let [errorShow,setErrorShow] = useState(false);
 
-
+// submit method
     const handleEmailSubmit =async () =>{
         setErrorShow(false);
         try{
@@ -23,9 +23,7 @@ const EnterEmailForForgetPassword = ({navigation}) => {
             setError('Please enter your email first')
         }else{
             var {data} =await axios.post(`${Root.production}/user/forgetPasswordMobile`,{email});
-            console.log('ho rha hai==>',data.status,'====',data.message)
             if(data.status==200){
-                console.log(data.message+2)
                 navigation.navigate('ResetPassword',{
                     code1 : data.message
                 })

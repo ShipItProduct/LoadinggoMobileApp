@@ -31,9 +31,10 @@ const   defaultScrollViewProps = {
       };
         
    const   onPrevStep = () => {
-        console.log('called previous step');
+        // console.log('called previous step');
       };
     
+      // method to submit form
    const   onSubmitStep = () => {
      setFlag(true)
   };
@@ -46,6 +47,7 @@ useEffect(()=>{
 fetching();
 },[id])
 
+//fetching data of trip
 const fetching = async()=>{
   setErrorShow(false);
   try{
@@ -65,7 +67,6 @@ catch(err){
   setError(err.message)
 }
 }
-
 
     return (
         <ScrollView style={styles.parent}>

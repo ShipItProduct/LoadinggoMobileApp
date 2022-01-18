@@ -26,11 +26,10 @@ useEffect(()=>{
 fetching();
 },[id,updation])
 
+// getting user info
 const fetching=async()=>{
     setErrorShow(false)
-        // user = JSON.parse(user);
         try{
-
         var {data} = await axios.post(`${Root.production}/user/getUserById`,{accountId:id})
         if(data.status==200){
             setUserData(data.message)

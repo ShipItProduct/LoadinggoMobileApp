@@ -58,22 +58,27 @@ const userId = user?.account?._id;
 const updation = useSelector(state=>state.updation)
 const dispatch = useDispatch();
 
+
 const handleStep = (val)=>{
   setStep(val);
   setErrorShow(false)
 }
 
+// function to handle modal
 const handleLocationModal =(type)=>{
     setLocationType(type)
     setShowModal(true)
   }
+  // function to show date picker
 const showDatePicker = (type) => {
     setDateType(type)
     setDatePickerVisibility(true);
 };
+  // function to hide date picker
 const hideDatePicker = () => {
     setDatePickerVisibility(false);
 };
+// function to set date
 const handleConfirm = (date) => {
     if(dateType==='pickup'){
         setPickUpDate(date)
@@ -82,13 +87,16 @@ const handleConfirm = (date) => {
     }
     hideDatePicker();
 };
+  // function to show time picker
 const showTimePicker = (type) => {
     setDateType(type)
     setTimePickerVisibility(true);
 };
+  // function to hide time picker
 const hideTimePicker = () => {
     setTimePickerVisibility(false);
 };
+// function to set time
 const handleTimeConfirm = (time) => {
     if(dateType==='pickup'){
         setPickUpTime(time)
@@ -97,6 +105,7 @@ const handleTimeConfirm = (time) => {
     }
     hideTimePicker();
 };
+// function to set coords of location
 const handleLocations =(long,lati)=>{
     if(locationType=='pickUp' ){
         setPickUpLattitude(lati);
@@ -113,6 +122,7 @@ const   defaultScrollViewProps = {
     }
   };
 
+// function to submit 
   const handleSubmit =async()=>{
     if(durationTime===0 || startingBid===''){
       setErrorShow(true)
@@ -172,7 +182,7 @@ catch(err){
 }
     }
     }
-
+    // functiom for validation of stepper to 2
 const handleFirstStep=()=>{
   if(dropOffLattitude===0 || dropOffLongitude===0 || pickupLattitude===0 || pickupLongitude===0){
     setErrorShow(true)
@@ -186,7 +196,7 @@ const handleFirstStep=()=>{
     handleStep(1)
   }
 }
-
+    // functiom for validation of stepper to 3
 const handleSecondStep=()=>{
   if(photo==''){
     setErrorShow(true)

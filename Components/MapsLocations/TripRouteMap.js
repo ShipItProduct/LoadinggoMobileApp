@@ -7,9 +7,10 @@ import { StyleSheet, Text, View, Dimensions,PermissionsAndroid, Button } from 'r
 
 export default function TripRoutedMap({departurelati,departurelongi,destinationlati,destinationlongi}) {
   let [region,setRegion]=useState()
-  const origin = {latitude: parseFloat(departurelati), longitude: parseFloat(departurelongi) };
-// const destination = {latitude: 24.894410421372083, longitude:67.06404534770509};
+// setting origin and destination
+const origin = {latitude: parseFloat(departurelati), longitude: parseFloat(departurelongi) };
 const destination = {latitude: parseFloat(destinationlati), longitude: parseFloat(destinationlongi) };
+
 const GOOGLE_MAPS_APIKEY = 'AIzaSyDhX60syaCg5jYirejPmeWfLHubpa2kPXo';
 region={
   latitude:   24.902092827540947,

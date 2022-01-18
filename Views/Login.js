@@ -19,25 +19,19 @@ const Login = ({navigation}) => {
     let [errorShow,setErrorShow] = useState(false);
     const [disabled , setDisabled] = useState(false)
 
+    // google configuration
     GoogleSignin.configure({
       webClientId: '780700793736-oudg9cns1jn3foim60bg54aefabrla89.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-      // webClientId: '1080341009220-c07eicflj0i50hspov11nu00cprbu6pr.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
       offlineAccess:true
-      // accountName: 'Loadinggo', // [Android] specifies an account name on the device that should be used
-        // androidClientId:'1080341009220-eejsurl9tu4bhm6vr40jsp2pcg09ljdc.apps.googleusercontent.com'
     });
 
+    // signin method using google
       const signIn = async () => {
         setErrorShow(false);
         setDisabled(true)
         try {
           const a=await GoogleSignin.hasPlayServices();
-          // console.log('ues==>',a)
           const userInfo = await GoogleSignin.signIn();
-        //   setState({ userInfo });
-        // console.log('as==>>',userInfo.user.name)
-        // console.log('as==>>',userInfo.user.email)
-        // console.log('as==>>',userInfo.user.id)
         const {data} = await axios.post(`${Root.production}/user/login` , {email: userInfo.user.email , password:userInfo.user.id})
         if(data.status==200){
           if (data.message.account.verified == true) {
@@ -61,15 +55,11 @@ const Login = ({navigation}) => {
 
       } 
         catch (error) {
-            console.log(error.message)
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
             // user cancelled the login flow
-        console.log('cancel')
           } else if (error.code === statusCodes.IN_PROGRESS) {
             // operation (e.g. sign in) is in progress already
-        console.log('in progress')
           } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('not available')
 
             // play services not available or outdated
           } else {
@@ -79,12 +69,12 @@ const Login = ({navigation}) => {
       setDisabled(false)
       };
 
+      // login method using email
     const handleLogin = async () =>{
       if(email!=='' || password!==''){
       setDisabled(true)
       setErrorShow(false);
         try {
-            // setDisabled(true)
             const {data} = await axios.post(`${Root.production}/user/login` , {email: email , password:password})
             if(data.status==200){
               if (data.message.account.verified == true) {
@@ -98,7 +88,6 @@ const Login = ({navigation}) => {
                 });
               }
             } else if (data.status == 403) {
-              // console.log(data.userId)
               navigation.navigate('BuildProfile',{
                 id:data.userId
               })
@@ -119,7 +108,8 @@ const Login = ({navigation}) => {
     }
     }
 
-const handleFirebaseFacebook= async()=>{
+      // login method using facebook
+      const handleFirebaseFacebook= async()=>{
   
   // Attempt login with permissions
   const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
@@ -158,11 +148,6 @@ const handleFirebaseFacebook= async()=>{
                 </Text>
               </View>
             }
-    <Button
-      onPress={() => handleFirebaseFacebook().then(() => console.log('Signed in with Facebook!'))}
-    >
-      Firebase Facebok Login
-      </Button>
             <View style={{alignItems:'center'}}  >
                 <TextInput label='Email' mode='outlined' style={styles.input} value={email} onChangeText={(text) => setEmail(text) } left={<TextInput.Icon name='email-outline' />}  />
                 <TextInput label='Password'  mode='outlined' style={styles.input} secureTextEntry value={password} onChangeText={(text) => setPassword(text)} left={<TextInput.Icon name='lock-outline' />} />
@@ -189,30 +174,22 @@ const handleFirebaseFacebook= async()=>{
   size={GoogleSigninButton.Size.Wide}
   color={GoogleSigninButton.Color.Light}
   onPress={()=>signIn()}
-//   disabled={this.state.isSigninInProgress}
 />   
 <LoginButton
-                    // publishPermissions={['publish_actions']}
             style={{width:250,height:35,backgroundColor:"blue"}}
               onLoginFinished={
                 (error, result) => {
-                  console.log('start')
-                  console.log(JSON.stringify(AccessToken.getCurrentAccessToken()))
                   if (error) {
-                    console.log("login has error: " + result.error);
                   } else if (result.isCancelled) {
-                    console.log("login is cancelled." + JSON.stringify(result));
                   } else {
                     AccessToken.getCurrentAccessToken().then(
                       (data) => {
-                        console.log('ho gya')
-                        // console.log(data.accessToken.toString())
                       }
                     )
                   }
                 }
               }
-              onLogoutFinished={() => console.log("logout.")}/>
+              onLogoutFinished={() => {}}/>
             </View>
             <Text
                 style={{color:'blue'}}

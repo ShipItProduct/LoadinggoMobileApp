@@ -14,12 +14,9 @@ import storage from '@react-native-firebase/storage';
 import moment from 'moment';
 import {Text, Input,Image ,Modal,VStack,HStack,Center,Select,CheckIcon,Heading} from 'native-base'
 
-
 const BuildProfile = ({route,navigation}) => {
 
-
     var {id} = route.params;
-    console.log(id)
     let [firstName, setFirstName] = useState('')
     let [lastName, setLastName] = useState('')
     let [gender, setGender] = React.useState("Male");
@@ -43,6 +40,7 @@ const BuildProfile = ({route,navigation}) => {
 
     let [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+    // function to set gender
     const handleGenderSelect = () => {
         if (gender === "Male") {
             setGender("Female")
@@ -52,14 +50,16 @@ const BuildProfile = ({route,navigation}) => {
         }
     }
 
+    // function to show date picker
     const showDatePicker = () => {
         setDatePickerVisibility(true);
     };
 
+    // function to hide date picker
     const hideDatePicker = () => {
         setDatePickerVisibility(false);
     };
-
+    // function to set date
     const handleConfirm = (date) => {
         // date=date+""
         // setdateOfBirthFormat(date)
@@ -69,7 +69,7 @@ const BuildProfile = ({route,navigation}) => {
         setdateOfBirthFormat(moment(date).format('YYYY MM DD'))
         hideDatePicker();
     };
-
+    // function to check validation
     const handleProfileSubmit =async () => {
         setErrorShow(false);
         setDisabled(true)
@@ -108,10 +108,9 @@ const BuildProfile = ({route,navigation}) => {
         setDisabled(false)
 
     }
-
+    // function to handle submission
     const handleTermsConditions = async()=>{
         try{
-
         var val={
             firstName,
             lastName,
@@ -137,23 +136,18 @@ const BuildProfile = ({route,navigation}) => {
 }catch(err){
     setErrorShow(true);
     setError(err.message)
-    console.log('error in catch==>',err.message)
 }
-
     }
-
+    // function to handle image process with firebase
     const handleImageProcess=async(imageUrl)=>{
           setDisp(false)
           setErrorShow(false);
         try{
-            console.log('MY ID==>','Minhaj')
         await storage().ref(`/avatars/${id}`).putFile(imageUrl);
         await  storage().ref('/avatars').child(id)
       .getDownloadURL().then(async (imageuri)=>{
           setUri(imageuri)
           setDisp(true)
-        //   console.log('MY IMAGE==>',imageuri)
-
     })
 }
 catch(err){

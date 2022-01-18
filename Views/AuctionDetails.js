@@ -30,15 +30,19 @@ useEffect(()=>{
   dispatch(setUpdation())
 },[])
 
-
     useEffect(()=>{
         fetching();
     },[id,updation])
+    
+    // fetching method
     const fetching=async()=>{
       setErrorShow(false);
         try{
+      // fetching auction by id 
+
         var {data} = await axios.post(`${Root.production}/auction/getAuctionById`,{auctionId:id})
         if(data.status==200){
+        // setting closing date of auction
           openTill = moment(data.message?.auctionData?.updatedAt,'YYYY-MM-DD');      
           openTill = openTill.add(data.message?.auctionData?.auctionDuration,'days').format('DD-MM-YYYY');
           setOpenTill(openTill)
@@ -75,7 +79,7 @@ useEffect(()=>{
         }
         }
     }
-      
+    // close auction method
       const closeAuction=async()=>{
       setErrorShow(false);
           try{
@@ -97,7 +101,7 @@ useEffect(()=>{
         }
       }
   
-    
+    // method to choose any bid    
       const handleChooseBid=async(auctionId,bidId)=>{
       setErrorShow(false);
           try{

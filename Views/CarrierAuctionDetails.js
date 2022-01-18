@@ -52,7 +52,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
     vehicleFetching();
   }, [id,updation]);
 
-
+ // fetching auction details  
   const fetching = async () => {
     setErrorShow(false);
     try{
@@ -60,6 +60,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
         auctionId: id,
       });
       if (data.status == 200) {
+        // setting closing date of auction
         openTill = moment(data.message?.auctionData?.updatedAt, 'YYYY-MM-DD');
         openTill = openTill
         .add(data.message?.auctionData?.auctionDuration, 'days')
@@ -69,25 +70,25 @@ const CarrierAuctionDetails = ({route,navigation}) => {
         bidsList = data.message.auctionData.bids;
         setBidsList(bidsList);
       setauctionStatus(auction?.auctionData?.status);
+        // fetching latest bid
       setLatestBid(bidsList.length>0 ? bidsList[bidsList.length-1].response.bidAmount : 0);
+
       // check for update Bid
       if(data.message.auctionData.bids.length>0){
-        
       myLatest = data.message.auctionData.bids.reverse().filter(val=>{
-        // if(val.response.carrierId==user.account._id){
           return val
-          // }
         })
       }
       setMyLatest(myLatest)
-      // end of checking
-      
+      // end of checking      
+
     } else {
       setError(data.message);
       setErrorShow(true);
     }
     var today = moment().format('DD-MM-YYYY');
     if (today > openTill) {
+      // terminate auction of date exceeded
       var {data} = await axios.post(
         `${Root.production}/auction/terminateAuction`,
         {
@@ -107,6 +108,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
     }
     };
     
+    // function to fetch vehicles data
     const vehicleFetching=async()=>{
       setErrorShow(false);
       // fetch vehicles
@@ -128,6 +130,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
     }
   }
 
+  // function to accept auction
   const handleAcceptAuction=async()=>{
     setErrorShow(false);
     try{
@@ -147,7 +150,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
     setErrorShow(true)
     setError(err.message)}
   }
-  
+// handle fuction for reject offer on auction
   const handleRejecttAuction=async ()=>{
     setErrorShow(false);
     try{
@@ -167,6 +170,7 @@ const CarrierAuctionDetails = ({route,navigation}) => {
     setError(err.message)}
   }
 
+    // handle function for popup of bid 
   const closePopUp=async()=>{
     setErrorShow(false);
     if(auction?.auctionData.bids.length==0 && Number(myBid) > auction.auctionData.startingBid){
@@ -201,8 +205,6 @@ const CarrierAuctionDetails = ({route,navigation}) => {
         setError(err.message)}
   }
   }
-
-
 
   return (
     <ScrollView style={styles.parent}>

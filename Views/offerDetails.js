@@ -25,7 +25,6 @@ const OfferDetails = ({route,navigation}) => {
     const updation = useSelector(state=>state.updation)
     const dispatch = useDispatch();
     
-    
     useEffect(()=>{
       dispatch(setUpdation())
     },[])
@@ -34,6 +33,7 @@ const OfferDetails = ({route,navigation}) => {
       fetching();
     },[id,updation])
 
+      // data fetching
     const fetching=async()=>{
       setErrorShow(false);
       try{
@@ -44,9 +44,7 @@ const OfferDetails = ({route,navigation}) => {
           shipment=data.message
           setShipment(data.message)
           setLoading(false)
-// date checking begin
 var get= data.message.shipmentOffer.createdAt;
-// var target = moment().format('LT');
 
 let target = moment(get).format()
 
@@ -59,12 +57,9 @@ let flag = moment(new Date()).isBefore(newtarget)
 if( !flag   && data.message.shipmentOffer.status=='Pending'){
   const response= await axios.post(`${Root.production}/trip/expireShipmentOffer` , {shipmentOfferId: id })
   if(response.data.status==200){
-    // window.location.reload();
-    console.log("pending offer has been expired");
   }
 }
 // end 
-
 
       }
       else{
@@ -77,7 +72,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
   setErrorShow(true)
   }
     }
-
+      // handle fuction to start offer
     const handleStartShipment=async()=>{
       setErrorShow(false);
       try{
@@ -98,7 +93,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
       }
 
       }
-
+      // handle fuction to accept offer
       const handleAcceptOffer = async ()=>{
         setErrorShow(false);
         try{
@@ -117,7 +112,7 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
         setErrorShow(true)
         setError(err.message)}
       }
-      
+      // handle fuction to reject offer
       const handleRejectOffer = async ()=>{
         setErrorShow(false);
         try{
@@ -135,16 +130,14 @@ if( !flag   && data.message.shipmentOffer.status=='Pending'){
         setError(err.message)}
 
       }
-
+      // close alert box
       const handleAlertClose=()=>{
           setIsOpen(false);
           navigation.navigate('Dashboard')
       }
 
-
     return (
         <ScrollView style={styles.parent}>
-
 <AlertDialog
         isOpen={isOpen}
         onClose={onClose}

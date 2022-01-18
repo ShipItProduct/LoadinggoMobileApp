@@ -29,7 +29,9 @@ useEffect(()=>{
     useEffect(()=>{
         fetching();
     },[userId,updation])
-    const fetching=async()=>{
+
+// getting auctions w.r.t user
+const fetching=async()=>{
         setErrorShow(false);
         try{
         var {data} =  await axios.post(`${Root.production}/auction/getAuctionByUser`,{
@@ -50,8 +52,7 @@ catch(err){
     }
 
     return (
-        <View>
-            
+        <View>        
             <Text style={styles.heading}>My Auctions</Text>
             {
               errorShow &&

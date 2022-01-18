@@ -35,6 +35,7 @@ useEffect(()=>{
 fetching();
 },[userId,updation])
 
+// fetching vehicles
 const fetching=async()=>{
     setErrorShow(false);
     try{
@@ -43,7 +44,6 @@ const fetching=async()=>{
       })
       if(data.status==200){
         setVehiclesArray(data.message)
-        console.log(data.message)
       }
       else{
           setError(data.message)
@@ -57,6 +57,7 @@ const fetching=async()=>{
   
   }
   
+  // add new vehicle method
 const handleAddNew =async()=>{
   if(licensePlate==='' || color==='' || manufacturer==='' || model==='' ||
   year===''){

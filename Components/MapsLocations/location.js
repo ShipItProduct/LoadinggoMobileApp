@@ -8,7 +8,7 @@ const Location = ({handleLocations,handle}) => {
     const [latitude,setLatitude] = useState(0)
     const [msg,setMsg] = useState('')
     
-    
+// fetching current location    
     GetLocation.getCurrentPosition({
         enableHighAccuracy: true,
         timeout: 15000,
@@ -31,7 +31,6 @@ const Location = ({handleLocations,handle}) => {
 
     return (
         <View>
-            {/* {longitude}---{latitude} */}
                 {
                     handle!==true &&
             <Text>

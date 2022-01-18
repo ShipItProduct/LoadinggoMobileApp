@@ -28,14 +28,14 @@ const ResetPassword = ({navigation,route}) => {
     setValue,
   });
 
-  const handleCodeSubmit = async () => {
+// code submit function
+const handleCodeSubmit = async () => {
 try{
     if(password!==resetPassword || password===''){
       setError('Your confirm password is different')
       setErrorShow(true)
     }
     else{
-      console.log('inner==>',code1)
       var {data} = await axios.post(`${Root.production}/user/resetUserPasswordMobile`,{
         code:Number(value),password        
       });

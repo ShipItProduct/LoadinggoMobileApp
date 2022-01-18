@@ -24,6 +24,7 @@ const VehicleDetails = ({route,navigation}) => {
         fetching();
     },[id])
 
+    // fetching vehivle details
     const fetching=async()=>{
       setErrorShow(false);
       try{
@@ -42,10 +43,11 @@ const VehicleDetails = ({route,navigation}) => {
   setErrorShow(true)
   }
     }
-
+    // close alert box
     const handleAlertClose = ()=>{
         // navigation.navigate('my-shipments',{id:shipment.shipmentOffer.accountId})
     }
+    // function to delete vehicle
     const ConfirmDeletion =async () =>{
       setErrorShow(false);
       try{

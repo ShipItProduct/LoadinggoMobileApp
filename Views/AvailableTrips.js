@@ -26,6 +26,7 @@ const AvailableTrips = () => {
         fectching();
     },[updation])
 
+// fetching of data
     const fectching=async()=>{
       setErrorShow(false);
         try{

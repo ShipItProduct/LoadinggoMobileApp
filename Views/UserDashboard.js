@@ -8,7 +8,6 @@ import axios from 'axios';
 import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
 
-
 const UserDashboard = () => {
 
     const user = useSelector(state=>state.user);
@@ -24,8 +23,7 @@ const UserDashboard = () => {
     const [closedTrips,setClosedTrips]  =useState(0)
 
     const updation = useSelector(state=>state.updation)
-    
-    
+        
     useEffect(()=>{
         fetching();
     },[updation])
@@ -33,54 +31,45 @@ const UserDashboard = () => {
     const fetching = async()=>{
     // ACTIVEORDERS
     try{
-
     var {data} = await axios.post(`${Root.production}/trip/countCarrierActiveShipment`,{carrierId:userId})
     if(data.status==200){
       setActiveOrders(data.message)
     }
-
     // Active Shipments
     var {data} = await axios.post(`${Root.production}/trip/countShipperActiveShipment`,{accountId:userId})
     if(data.status==200){
       setActiveShipments(data.message)
     }
-    
     // PENDING ORDERS
     var {data} = await axios.post(`${Root.production}/trip/countCarrierPendingShipment`,{carrierId:userId})
     if(data.status==200){
       setPendingOrders(data.message)
     }
-    
     // PENDING shipments
     var {data} = await axios.post(`${Root.production}/trip/countCarrierShipperPendingShipment`,{accountId:userId})
     if(data.status==200){
       setPendingShipments(data.message)
     }
-    
     // completed ORDERS
     var {data} = await axios.post(`${Root.production}/trip/countCarrierCompleteShipment`,{carrierId:userId})
     if(data.status==200){
       setCompleteOrders(data.message)
-    }
-    
+    }    
     // completed shipments
     var {data} = await axios.post(`${Root.production}/trip/countCarrierShipperCompleteShipment`,{accountId:userId})
     if(data.status==200){
       setCompleteShipments(data.message)
     }
-    
     // active trips
     var {data} = await axios.post(`${Root.production}/trip/countCarrierActiveTrips`,{carrierId:userId})
     if(data.status==200){
       setPendingTrips(data.message)
     }
-
     // closed trips
     var {data} = await axios.post(`${Root.production}/trip/countCarrierClosedTrips`,{carrierId:userId})
     if(data.status==200){
       setClosedTrips(data.message)
     }   
-
     // cancel trips
     var {data} = await axios.post(`${Root.production}/trip/countCarrierCancelledTrips`,{carrierId:userId})
     if(data.status==200){
@@ -88,12 +77,10 @@ const UserDashboard = () => {
     }
 }
 catch(err){
-    console.log(err.message)
-}
-    }
-
-    const currentRole = useSelector(state => state.role)
-
+}}
+ 
+const currentRole = useSelector(state => state.role)
+ 
     return (
  
             < ScrollView style={styles.shipperDashboardPage} >

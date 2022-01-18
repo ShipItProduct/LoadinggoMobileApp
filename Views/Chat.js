@@ -10,8 +10,8 @@ import {useDispatch,useSelector} from 'react-redux';
 import {setUpdation} from './../Store/action';
 
 const Chat = ({route}) => {
+    // connecting with socket.io
     const socket = io('https://stg-dakiyah.herokuapp.com');
-    // const socket = io(`${Root.production}`)
     const user = useSelector(state=>state.user)
     const userId = user?.account?._id;
     const [msg,setMsg] = useState('')
@@ -30,10 +30,10 @@ const Chat = ({route}) => {
 fetching();
 }, [id])
 
+// fetching of all messages 
 const fetching = async()=>{
     setErrorShow(false);
 try{
-
 var {data} = await axios.post(`${Root.production}/chat/getChatById`,{
     chatId : id
 })
@@ -49,14 +49,13 @@ if(data.status == 200){
     setErrorShow(true)
     setError(err.message)
 }
-
 }
 
+// method to send message with socket.io
 const handleSendMsg=()=>{
     if(msg===''){
         Alert.alert('Type message first')
     }else{
-        // socket.emit('sendMessage',{senderId:user.account._id,message:msg})
         socket.emit('sendMessage',{senderId:userId,message:msg})
         setMsg('')
     }

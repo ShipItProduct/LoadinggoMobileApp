@@ -37,6 +37,7 @@ handleDataFilter('All')
 
 },[updation])
 
+// getting shipment w.r.t user
 const fetching=async()=>{
   setErrorShow(false);
   try{
@@ -57,16 +58,12 @@ catch(err){
 setError(err.message)
 setErrorShow(true)
 }
-// userId=1;
 }
 
 const handleDataFilter = (type)=>{
-    if(type!='All'){
-  // start of all checking
-  
+    // checking of 'all' option
+  if(type!='All'){  
     shipments = [];
-    //   filter= type;
-//   setFilter(filter);
   shipments.push(
     myAllShipments.filter((val) => {
       var check = val.status === type;
@@ -76,18 +73,16 @@ const handleDataFilter = (type)=>{
     })
   );
   shipments = shipments[0];
-  setShipments(shipments);
-  
-  
+  setShipments(shipments);  
   }
-  // end of all checking
-  else{
+      // checking the status condition
+      else{
     shipments=myAllShipments;
     setShipments(shipments)
   }
     }
-  
 
+// filter method as per cities
     const filterData = () => {
         shipments = [];
         if (from !== "" && to === "") {
@@ -139,13 +134,11 @@ const handleDataFilter = (type)=>{
           setShipments(shipments);
         }
       };
-    
-
-
+  // method to toggle display of fiter box 
 const toggleFilter =()=>{
         setShowFilter(!showFilter)
 }
-
+  // handle from and to city
 const handleChange=(city,type)=>{
     if(type==='to'){
         setTo(city)

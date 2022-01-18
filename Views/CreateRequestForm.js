@@ -44,6 +44,7 @@ const CreateRequestForm = ({flag,handleFlag,tripData,navigation}) => {
     const updation = useSelector(state=>state.updation)
     const dispatch = useDispatch();
     
+    // submit method for shipment request
     const handleSubmit= async()=>{
       if(dropOffLattitude===0 || dropOffLongitude===0 || pickupLattitude===0 || pickupLongitude===0){
         setErrorShow(true)
@@ -96,32 +97,34 @@ const CreateRequestForm = ({flag,handleFlag,tripData,navigation}) => {
     }
   }
     }
-    
+// communication with parent    
     const handleFunction =async()=>{
      await handleFlag()
-      console.log('done')
      await handleSubmit()
     }
 
   if(flag){
     handleFunction()
   }
-
-
+// function to hide date picker
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
 };
+// function to Set date
 const handleConfirm = (date) => {
     setpickupDate(date)
     hideDatePicker();
 };
+// function to show date picker
 const showDatePicker = () => {
   setDatePickerVisibility(true);
 };
+// function to set LOCATIon modal
 const handleLocationModal =(type)=>{
   setLocationType(type)
   setShowModal(true)
 }
+// function to set coords of location
 const handleLocations =(long,lati)=>{
     if(locationType=='pickUp' ){
         setPickUpLattitude(lati);
@@ -132,7 +135,6 @@ const handleLocations =(long,lati)=>{
         setDropOffLongitude(long);
     }
 }
-
 
     return (
         <ScrollView>
